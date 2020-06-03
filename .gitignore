@@ -1,3 +1,13 @@
+*.log
+*.data
+*.txt
+.#*
+.project
+.DS_Store
+.vscode
+*.code-workspace
+*.block
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -13,3 +23,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+treee
+treee.exe
