@@ -1,4 +1,4 @@
-package core
+package model
 
 import (
 	"errors"
@@ -14,6 +14,9 @@ var regexHash = regexp.MustCompile(`^(?:[0-9a-fA-F]{2})*$`)
 
 // Hash is the hexadecimal string representation of a hash, ie. a string of even length only made out of 0 to 9 and a to f characters.
 type Hash string
+
+// EmptyHash ...
+const EmptyHash = Hash("")
 
 //--- METHODS
 
