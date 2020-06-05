@@ -50,6 +50,10 @@ func (t *Treee) Add(item branch.Leaf) error {
 	}
 
 	// 1- Prepare and check
+	if found, err := t.Search(item.ID); err == nil && found.ID == item.ID {
+		return exception.NewAlreadyExistsInIndexError(idStr)
+	}
+
 	var previous *branch.Leaf
 	previousID, e := item.Previous.String()
 	if item.Previous.NonEmpty() && e == nil && previousID != idStr {

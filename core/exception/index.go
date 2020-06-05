@@ -4,6 +4,22 @@ import (
 	"fmt"
 )
 
+// AlreadyExistsInIndexError ...
+type AlreadyExistsInIndexError struct {
+	message string
+}
+
+func (e AlreadyExistsInIndexError) Error() string {
+	return e.message
+}
+
+// NewAlreadyExistsInIndexError ...
+func NewAlreadyExistsInIndexError(id string) *AlreadyExistsInIndexError {
+	return &AlreadyExistsInIndexError{
+		message: fmt.Sprintf("item already exists in the index: %s", id),
+	}
+}
+
 // EmptyItemError ...
 type EmptyItemError struct {
 	message string
