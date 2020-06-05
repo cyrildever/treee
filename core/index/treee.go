@@ -7,10 +7,15 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/cyrildever/treee/common/logger"
+	"github.com/cyrildever/treee/core/exception"
 	"github.com/cyrildever/treee/core/index/branch"
 	"github.com/cyrildever/treee/core/model"
 	"github.com/cyrildever/treee/utils"
 )
+
+// Current is the current Treee index used when running the executable app
+var Current *Treee
 
 const (
 	// INIT_PRIME ...
@@ -34,8 +39,10 @@ func (t *Treee) Add(item branch.Leaf) error {
 	t.Lock()
 	defer t.Unlock()
 
+	log := logger.Init("index", "Add")
+
 	if item.Size == 0 {
-		return errors.New("empty item")
+		return exception.NewEmptyItemError()
 	}
 	idStr, err := item.ID.String()
 	if err != nil {
@@ -81,7 +88,7 @@ func (t *Treee) Add(item branch.Leaf) error {
 		usedStage.Set(currentStage)
 		currentStage.SetUint64(currentNode.StagePrime)
 		if usedStage.Cmp(currentStage) == 0 {
-			return errors.New("looping without adding item")
+			return exception.NewLoopError("adding")
 		}
 		modulo := new(big.Int)
 		modulo = modulo.Mod(id, currentStage)
@@ -97,7 +104,7 @@ func (t *Treee) Add(item branch.Leaf) error {
 			existingLeaf := targetBranch.GetLeaf()
 			nextPrime, err := utils.NextPrime(currentStage.Uint64())
 			if err != nil {
-				// TODO Log and warn because it could mean that we are beyond the first 1000 prime numbers
+				log.Crit("Unable to get next prime number", "error", err)
 				return err
 			}
 			newNode := branch.NewNode(nextPrime)
@@ -148,7 +155,7 @@ func (t *Treee) Search(ID model.Hash) (found *branch.Leaf, err error) {
 		usedStage.Set(currentStage)
 		currentStage.SetUint64(currentNode.StagePrime)
 		if usedStage.Cmp(currentStage) == 0 {
-			err = errors.New("looping without finding item")
+			err = exception.NewLoopError("finding")
 			return
 		}
 		modulo := new(big.Int)
@@ -156,7 +163,7 @@ func (t *Treee) Search(ID model.Hash) (found *branch.Leaf, err error) {
 		idx := modulo.Uint64()
 		targetBranch, exists := currentNode.ChildAt(idx)
 		if !exists || targetBranch.IsEmpty() {
-			err = errors.New("not found") // TODO Typed error
+			err = exception.NewNotFoundError(idStr)
 			return
 		} else if targetBranch.IsLeaf() {
 			found = targetBranch.GetLeaf()

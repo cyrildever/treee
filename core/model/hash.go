@@ -1,10 +1,10 @@
 package model
 
 import (
-	"errors"
 	"regexp"
 	"strings"
 
+	"github.com/cyrildever/treee/core/exception"
 	"github.com/cyrildever/treee/utils"
 )
 
@@ -28,7 +28,7 @@ func (h Hash) Bytes() ([]byte, error) {
 // String ...
 func (h Hash) String() (str string, err error) {
 	if !regexHash.MatchString(string(h)) {
-		err = errors.New("invalid hash string")
+		err = exception.NewInvalidHashStringError(string(h))
 		return
 	}
 	return strings.ToLower(string(h)), nil
