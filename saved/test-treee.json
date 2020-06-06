@@ -1,0 +1,93 @@
+{
+  "initPrime": 2,
+  "size": 3,
+  "trunk": {
+    "children": [
+      {
+        "0": {
+          "id": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+          "next": "",
+          "origin": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+          "position": 150,
+          "previous": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+          "size": 10
+        }
+      },
+      {
+        "1": {
+          "children": [
+            {
+              "2": {}
+            },
+            {
+              "0": {
+                "children": [
+                  {
+                    "2": {}
+                  },
+                  {
+                    "3": {}
+                  },
+                  {
+                    "4": {}
+                  },
+                  {
+                    "0": {
+                      "children": [
+                        {
+                          "6": {}
+                        },
+                        {
+                          "0": {
+                            "id": "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+                            "next": "",
+                            "origin": "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+                            "position": 100,
+                            "previous": "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+                            "size": 50
+                          }
+                        },
+                        {
+                          "1": {}
+                        },
+                        {
+                          "2": {}
+                        },
+                        {
+                          "3": {}
+                        },
+                        {
+                          "4": {
+                            "id": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                            "next": "",
+                            "origin": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                            "position": 0,
+                            "previous": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                            "size": 100
+                          }
+                        },
+                        {
+                          "5": {}
+                        }
+                      ],
+                      "stagePrime": 7
+                    }
+                  },
+                  {
+                    "1": {}
+                  }
+                ],
+                "stagePrime": 5
+              }
+            },
+            {
+              "1": {}
+            }
+          ],
+          "stagePrime": 3
+        }
+      }
+    ],
+    "stagePrime": 2
+  }
+}

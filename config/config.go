@@ -16,6 +16,7 @@ type Config struct {
 	HTTPPort  string
 	Host      string
 	InitPrime uint64
+	IndexPath string
 }
 
 var singleton *Config
@@ -34,6 +35,7 @@ func (c *Config) populateWithEnv() {
 	setString("HTTP_PORT", &c.HTTPPort)
 	setString("HOST", &c.Host)
 	setUintOrPanic("INIT_PRIME", &c.InitPrime)
+	setString("INDEX_PATH", &c.IndexPath)
 }
 
 //--- FUNCTIONS
@@ -50,13 +52,14 @@ func GetConfig() (*Config, error) {
 		singleton = &Config{}
 		httpPort := flag.String("p", "7000", "HTTP port number")
 		host := flag.String("h", "0.0.0.0", "Host address")
+		indexPath := flag.String("f", "", "File path to an existing index")
 		initPrime := flag.String("init", "0", "Initial prime number to use for the index")
 
 		flag.Parse()
 
 		singleton.HTTPPort = *httpPort
 		singleton.Host = *host
-
+		singleton.IndexPath = *indexPath
 		if *initPrime != "0" {
 			p, e := strconv.ParseUint(*initPrime, 10, 64)
 			if e != nil {

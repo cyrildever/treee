@@ -18,6 +18,15 @@ type Node struct {
 
 //--- METHODS
 
+// AddBranch ...
+func (n *Node) AddBranch(item *Branch, idx uint64) bool {
+	if _, exists := n.children[idx]; !exists {
+		n.children[idx] = item
+		return true
+	}
+	return false
+}
+
 // AddLeaf ...
 func (n *Node) AddLeaf(item *Leaf) bool {
 	idStr, err := item.ID.String()

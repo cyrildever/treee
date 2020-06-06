@@ -67,6 +67,7 @@ func PostLeaf(request *routing.Context) error {
 		return http_errors.SetMarshallingError(request, requestID)
 	}
 
+	save := false
 	var resp response.PostLeaf
 	err = index.Current.Add(leaf)
 	if err != nil {
@@ -80,7 +81,12 @@ func PostLeaf(request *routing.Context) error {
 			Code:   200,
 			Result: idLeaf,
 		}
+		save = true
 	}
 
-	return sendResponse("PostLeaf", request, requestID, resp, nil)
+	err = sendResponse("PostLeaf", request, requestID, resp, nil)
+	if save {
+		go index.Current.Save()
+	}
+	return err
 }

@@ -2,6 +2,8 @@ package index_test
 
 import (
 	"fmt"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/cyrildever/treee/core/index"
@@ -78,4 +80,15 @@ func TestTreee(t *testing.T) {
 	assert.Equal(t, found.ID, secondLeaf.ID)
 	assert.Equal(t, found.Position, secondLeaf.Position)
 	assert.Equal(t, found.Size, secondLeaf.Size)
+}
+
+// TestLoad ...
+func TestLoad(t *testing.T) {
+	pwd, _ := os.Getwd()
+	path := strings.Replace(pwd, "core"+string(os.PathSeparator)+"index", "", 1) // TODO Change if path to test changes
+	treee, err := index.Load(path + "saved" + string(os.PathSeparator) + "test-treee.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, treee.Size(), uint64(3))
 }

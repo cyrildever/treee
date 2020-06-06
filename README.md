@@ -109,6 +109,17 @@ if found, err := treee.Search(leaf.ID); err == nil {
 }
 ```
 
+For debugging or storage purposes, you might want to use the `PrintAll()` method on the Treee index to print all recorded leaves to a writer (passing it `true` as argument for beautifying the printed JSON, or `false` for the raw string).
+```golang
+// To print to Stdout
+fmt.Println(treee.PrintAll(true))
+```
+
+Permanence of the index could be achieved through the use of the automatic save made upon insertion in the `./saved/treee.json` file, and the use of the `Load()` function instead of Treee instantiation with `New()` at start-up.
+```golang
+treee, err := index.Load("path/to/treee.json") // If empty, will look into /saved/ folder
+```
+
 
 ### Executable
 
@@ -121,6 +132,8 @@ $ ./treee -p 7001 -h localhost -init 101
 
 ```
 Usage of ./treee:
+  -f string
+        File path to an existing index
   -h string
         Host address (default "0.0.0.0")
   -init string
@@ -177,7 +190,7 @@ It returns a status code and the following object as JSON:
 }
 ```
 
-The list of codes (and their meaning) is as follows:
+The list of status codes (and their meaning) is as follows:
   - `200`: item inserted;
   - `303`: item already exists (not updated);
   - `400`: wrong parameter (missing item, missing mandatory field, etc.);

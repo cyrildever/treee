@@ -18,12 +18,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	treee, err := index.New(conf.InitPrime)
+
+	treee, err := index.Load(conf.IndexPath)
 	if err != nil {
-		log.Crit("Unable to instantiate index", "error", err)
-		return
+		log.Warn("Index doesn't exist, building one...", "error", err)
+		treee, err = index.New(conf.InitPrime)
+		if err != nil {
+			log.Crit("Unable to instantiate new index", "error", err)
+			return
+		}
+		log.Info("Index created", "initPrime", treee.InitPrime)
+	} else {
+		log.Info("Index up and running", "size", treee.Size(), "initPrime", treee.InitPrime)
 	}
-	index.Current = &treee
+
+	index.Current = treee
 
 	api.InitHTTPServer(conf)
 }
