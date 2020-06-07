@@ -93,8 +93,7 @@ func PostLeaf(request *routing.Context) error {
 		log.Warn("Unmarshalling error", "error", err)
 		return http_errors.SetMarshallingError(request, requestID)
 	}
-	leafID, _ := leaf.ID.String()
-	log.Debug("Receiving leaf...", "id", leafID) // Remove in production
+	log.Debug("Receiving leaf...", "id", leaf.ID) // Remove in production
 
 	save := false
 	var resp response.PostLeaf
