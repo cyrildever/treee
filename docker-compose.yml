@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  treee:
+    # image: edgewhere/treee:1.0.0
+    build: .
+    volumes:
+      - data-treee:/home/treee/saved
+    ports:
+      - 7000:7000
+    hostname: treee-1
+    container_name: treee-1
+    restart: always
+    environment:
+      HOST: treee-1
+      HTTP_PORT: 7000
+
+volumes:
+  data-treee:
+    driver: local
