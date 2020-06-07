@@ -3,8 +3,11 @@ package index_test
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/cyrildever/treee/core/index"
 	"github.com/cyrildever/treee/core/index/branch"
@@ -91,4 +94,33 @@ func TestLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, treee.Size(), uint64(3))
+}
+
+// TestScalability ...
+func TestScalability(t *testing.T) {
+	var wg sync.WaitGroup
+	rounds := 10000
+	t0 := time.Now().UnixNano()
+	treee, _ := index.New(101)
+	for i := 0; i < rounds; i++ {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, i int64, treee *index.Treee) {
+			defer wg.Done()
+			leaf := branch.Leaf{
+				ID:       model.Hash(fmt.Sprintf("%0x", strconv.FormatInt(i, 16))),
+				Position: i,
+				Size:     1,
+			}
+			err := treee.Add(leaf)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}(&wg, int64(i), treee)
+	}
+	wg.Wait()
+	t1 := time.Now().UnixNano()
+	fmt.Printf("test for %d rounds completed in %d ms\n", rounds, (t1-t0)/int64(time.Millisecond))
+	assert.Equal(t, treee.Size(), uint64(rounds))
+
+	// assert.Assert(t, false) // TODO Uncomment to get time
 }

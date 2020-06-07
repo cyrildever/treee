@@ -2,8 +2,6 @@ package index
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"math/big"
 	"os"
 	"strconv"
@@ -15,7 +13,7 @@ import (
 	"github.com/cyrildever/treee/core/exception"
 	"github.com/cyrildever/treee/core/index/branch"
 	"github.com/cyrildever/treee/core/model"
-	"github.com/cyrildever/treee/utils"
+	"github.com/cyrildever/treee/utils/prime"
 )
 
 // Current is the current Treee index used when running the executable app
@@ -112,8 +110,9 @@ func (t *Treee) Add(item branch.Leaf) error {
 			return nil
 		} else if targetBranch.IsLeaf() {
 			existingLeaf := targetBranch.GetLeaf()
-			nextPrime, err := utils.NextPrime(currentStage.Uint64())
+			nextPrime, err := prime.Next(currentStage.Uint64())
 			if err != nil {
+				// This shouldn't happen so we'd better log it
 				log.Crit("Unable to get next prime number", "error", err)
 				return err
 			}
@@ -155,7 +154,11 @@ func (t *Treee) Save() {
 	if !saving && !conf.IsTestEnvironment() {
 		saving = true
 		t0 := time.Now().UnixNano()
-		f, err := os.Create("./saved/treee.json")
+		path := conf.IndexPath
+		if path == "" {
+			path = "saved" + string(os.PathSeparator) + "treee.json"
+		}
+		f, err := os.Create(path)
 		if err != nil {
 			log.Crit("Unable to create file", "error", err)
 			saving = false
@@ -255,11 +258,11 @@ func Load(path string) (t *Treee, err error) {
 
 	stagePrime, ok := st.Trunk["stagePrime"]
 	if !ok {
-		err = errors.New("not a valid treee")
+		err = exception.NewNotAValidTreeeError()
 		return
 	}
-	if sp, ok := stagePrime.(float64); !ok || uint64(sp) != st.InitPrime || !utils.IsPrime(uint64(sp)) {
-		err = fmt.Errorf("not a valid stage prime number: %f", sp)
+	if sp, ok := stagePrime.(float64); !ok || uint64(sp) != st.InitPrime || !prime.IsPrime(uint64(sp)) {
+		err = prime.NewNotAValidNumberError(uint64(sp))
 		return
 	}
 
@@ -276,7 +279,7 @@ func Load(path string) (t *Treee, err error) {
 			size:      st.Size,
 		}
 	} else {
-		return &treee, fmt.Errorf("declared size [%d] not equal to actual size [%d]", st.Size, actualSize)
+		return &treee, exception.NewIncoherentSizeError(int(st.Size), actualSize)
 	}
 
 	return &treee, nil
@@ -284,7 +287,7 @@ func Load(path string) (t *Treee, err error) {
 
 // New ...
 func New(initPrime uint64) (t *Treee, err error) {
-	if utils.IsPrime(initPrime) {
+	if prime.IsPrime(initPrime) {
 		t = &Treee{
 			InitPrime: initPrime,
 			trunk:     branch.NewNode(initPrime),
@@ -295,19 +298,22 @@ func New(initPrime uint64) (t *Treee, err error) {
 			trunk:     branch.NewNode(INIT_PRIME),
 		}
 	} else {
-		err = errors.New("invalid prime number")
+		err = prime.NewNotAValidNumberError(initPrime)
 	}
 	return
 }
 
+// parse fills the passed node with the information in the array of interface 'arr', and increments the global actual size of the index;
+// 'arr' is supposed to be in the form of map[0:...] where 0 is the remainder/index at the considered stage and ... either an empty map/branch,
+// the children of a node, or a leaf as a map
 func parse(node *branch.Node, arr []interface{}, actualSize *int) error {
 	for _, v := range arr {
 		if val, ok := v.(map[string]interface{}); ok {
-			for prime, child := range val {
+			for remainder, child := range val {
 				b := branch.Branch{}
 				if value, ok := child.(map[string]interface{}); ok {
 					if len(value) == 0 {
-						idx, err := strconv.Atoi(prime)
+						idx, err := strconv.Atoi(remainder)
 						if err != nil {
 							return err
 						}
@@ -317,11 +323,11 @@ func parse(node *branch.Node, arr []interface{}, actualSize *int) error {
 					if n, ok := value["children"]; ok {
 						stagePrime, ok := value["stagePrime"]
 						if !ok {
-							return errors.New("not a valid treee")
+							return exception.NewNotAValidTreeeError()
 						}
 						sp, ok := stagePrime.(float64)
-						if !ok || !utils.IsPrime(uint64(sp)) {
-							return fmt.Errorf("not a valid stage prime number: %f", sp)
+						if !ok || !prime.IsPrime(uint64(sp)) {
+							return prime.NewNotAValidNumberError(uint64(sp))
 						}
 						newNode := branch.NewNode(uint64(sp))
 						err := parse(newNode, n.([]interface{}), actualSize)
@@ -349,11 +355,11 @@ func parse(node *branch.Node, arr []interface{}, actualSize *int) error {
 					(*actualSize)++
 					node.AddLeaf(b.GetLeaf())
 				} else if b.IsNode() {
-					p, _ := strconv.Atoi(prime)
-					node.AddNode(b.GetNode(), uint64(p))
+					r, _ := strconv.Atoi(remainder)
+					node.AddNode(b.GetNode(), uint64(r))
 				} else {
-					p, _ := strconv.Atoi(prime)
-					node.AddBranch(&b, uint64(p))
+					r, _ := strconv.Atoi(remainder)
+					node.AddBranch(&b, uint64(r))
 				}
 			}
 		}

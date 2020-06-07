@@ -36,6 +36,22 @@ func NewEmptyItemError() *EmptyItemError {
 	}
 }
 
+// IncoherentSizeError ...
+type IncoherentSizeError struct {
+	message string
+}
+
+func (e IncoherentSizeError) Error() string {
+	return e.message
+}
+
+// NewIncoherentSizeError ...
+func NewIncoherentSizeError(expected, found int) *IncoherentSizeError {
+	return &IncoherentSizeError{
+		message: fmt.Sprintf("declared size [%d] not equal to actual size [%d]", expected, found),
+	}
+}
+
 // LoopError ...
 type LoopError struct {
 	message string
@@ -65,5 +81,21 @@ func (e NotFoundError) Error() string {
 func NewNotFoundError(itemID string) *NotFoundError {
 	return &NotFoundError{
 		message: fmt.Sprintf("nothing found for ID: %s", itemID),
+	}
+}
+
+// NotAValidTreeeError ...
+type NotAValidTreeeError struct {
+	message string
+}
+
+func (e NotAValidTreeeError) Error() string {
+	return e.message
+}
+
+// NewNotAValidTreeeError ...
+func NewNotAValidTreeeError() *NotAValidTreeeError {
+	return &NotAValidTreeeError{
+		message: "not a valid treee",
 	}
 }

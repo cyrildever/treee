@@ -1,7 +1,9 @@
-package utils
+package prime
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 )
 
 var primeNumbers = []uint64{
@@ -76,8 +78,8 @@ func IsPrime(number uint64) bool {
 	return false
 }
 
-// NextPrime ...
-func NextPrime(number uint64) (uint64, error) {
+// Next ...
+func Next(number uint64) (uint64, error) {
 	if number > 7918 {
 		return 0, errors.New("number is too high")
 	}
@@ -87,4 +89,26 @@ func NextPrime(number uint64) (uint64, error) {
 		}
 	}
 	return 0, errors.New("unable to find next prime")
+}
+
+//--- ERRORS
+
+// NotAValidNumberError ...
+type NotAValidNumberError struct {
+	message string
+}
+
+func (e NotAValidNumberError) Error() string {
+	return e.message
+}
+
+// NewNotAValidNumberError ...
+func NewNotAValidNumberError(number ...uint64) *NotAValidNumberError {
+	pn := strconv.FormatUint(number[0], 10)
+	if len(number) == 0 || number[0] == 0 {
+		pn = ""
+	}
+	return &NotAValidNumberError{
+		message: fmt.Sprintf("not a valid prime number [%s]", pn),
+	}
 }

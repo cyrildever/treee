@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cyrildever/treee/utils"
+	"github.com/cyrildever/treee/utils/prime"
 )
 
 //--- TYPES
@@ -47,7 +47,7 @@ func (n *Node) AddLeaf(item *Leaf) bool {
 		n.children[idx] = &newBranch
 		return true
 	} else if existing.IsLeaf() {
-		nextPrime, err := utils.NextPrime(n.StagePrime)
+		nextPrime, err := prime.Next(n.StagePrime)
 		if err != nil {
 			// TODO Log and warn because it could mean that we are beyond the first 1000 prime numbers
 			return false

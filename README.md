@@ -109,15 +109,17 @@ if found, err := treee.Search(leaf.ID); err == nil {
 }
 ```
 
-For debugging or storage purposes, you might want to use the `PrintAll()` method on the Treee index to print all recorded leaves to a writer (passing it `true` as argument for beautifying the printed JSON, or `false` for the raw string).
+For better performance, you should put your search requests in different goroutines.
+
+For debugging or storage purposes, you might want to use the `PrintAll()` method on the `Treee` index to print all recorded leaves to a writer (passing it `true` as argument for beautifying the printed JSON, or `false` for the raw string).
 ```golang
 // To print to Stdout
 fmt.Println(treee.PrintAll(true))
 ```
 
-Permanence of the index could be achieved through the use of the automatic save made upon insertion in the `./saved/treee.json` file, and the use of the `Load()` function instead of Treee instantiation with `New()` at start-up.
+Permanence of the index is achieved through the use of the automatic save made upon insertion, and the use of the `Load()` function instead of Treee instantiation with `New()` at start-up.
 ```golang
-treee, err := index.Load("path/to/treee.json") // If empty, will look into /saved/ folder
+treee, err := index.Load("path/to/treee.json") // If empty, will use "./saved/treee.json"
 ```
 
 
@@ -142,6 +144,14 @@ Usage of ./treee:
         HTTP port number (default "7000")
 ```
 
+##### Environment variables
+
+If set, the following environment variables will override any corresponding default configuration or flag passed with the command line:
+- `HOST`: the host address;
+- `HTTP_PORT`: the HTTP port number to use;
+- `INDEX_PATH`: the path to the index file in JSON format;
+- `INIT_PRIME`: the initial prime number (note that it won't have any effect if using a file because the latter will prevail).
+
 ##### API
 
 The following endpoints are available under the `/api` group:
@@ -150,7 +160,7 @@ The following endpoints are available under the `/api` group:
 
 This endpoint searches items based on the passed IDs.
 
-It expects an array of IDs as `ids` query argument, eg. `http://localhost:7000/api/leaf?ids=1234567890abcdef[...]`
+It expects an array of IDs as `ids` query argument, eg. `http://localhost:7000/api/leaf?ids=1234567890abcdef[...]&ids=fedcba0987654321[...]`
 
 It returns a JSON object respecting the following format:
 ```json
@@ -192,7 +202,7 @@ It returns a status code and the following object as JSON:
 
 The list of status codes (and their meaning) is as follows:
   - `200`: item inserted;
-  - `303`: item already exists (not updated);
+  - `303`: item already exists (not updated as the file is supposed to be immutable);
   - `400`: wrong parameter (missing item, missing mandatory field, etc.);
   - `404`: passed previous item not found;
   - `412`: something in the passed data caused the server to fail (incorrect JSON format, ...);
