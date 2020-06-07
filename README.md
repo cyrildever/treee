@@ -214,8 +214,8 @@ The list of status codes (and their meaning) is as follows:
 ### Performance
 
 On an Apple MacBook Pro 2.3 GHz Intel Core i9 with 16 Go DDR4 RAM clocked at 2400 MHz, I observed the following performances when using `101` as init prime:
-- insertion: 10,000 additions in 300ms (~120 millions per hour);
-- search: 1,000,000 requests in 500ms, ie. approx. 2 MHz (~7.2 billions per hour).
+- insertion: 10,000 additions in ~300ms (120 millions per hour);
+- search: 1,000,000 requests in ~500ms, ie. approx. 2 MHz (7.2 billions per hour).
 
 
 ### License
