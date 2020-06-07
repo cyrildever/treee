@@ -43,7 +43,9 @@ func (n *Node) AddLeaf(item *Leaf) bool {
 	existing, exists := n.children[idx]
 	if !exists || existing.IsEmpty() {
 		newBranch := Branch{}
-		newBranch.Assign(*item)
+		if !newBranch.Assign(item) {
+			return false
+		}
 		n.children[idx] = &newBranch
 		return true
 	} else if existing.IsLeaf() {
@@ -56,7 +58,9 @@ func (n *Node) AddLeaf(item *Leaf) bool {
 		newNode.AddLeaf(existing.GetLeaf())
 		newNode.AddLeaf(item)
 		newBranch := Branch{}
-		newBranch.Assign(*newNode)
+		if !newBranch.Assign(newNode) {
+			return false
+		}
 		n.children[idx] = &newBranch
 	}
 	return false
@@ -66,7 +70,9 @@ func (n *Node) AddLeaf(item *Leaf) bool {
 func (n *Node) AddNode(item *Node, idx uint64) bool {
 	if _, exists := n.children[idx]; !exists {
 		newBranch := Branch{}
-		newBranch.Assign(*item)
+		if !newBranch.Assign(item) {
+			return false
+		}
 		n.children[idx] = &newBranch
 		return true
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/cyrildever/treee/core/exception"
 	"github.com/cyrildever/treee/core/index/branch"
 	"github.com/cyrildever/treee/core/model"
+	"github.com/cyrildever/treee/utils"
 	"github.com/cyrildever/treee/utils/prime"
 )
 
@@ -61,7 +62,7 @@ func (t *Treee) Add(item branch.Leaf) error {
 	var previous *branch.Leaf
 	previousID, e := item.Previous.String()
 	if item.Previous.NonEmpty() && e == nil && previousID != idStr {
-		existingPrevious, err := t.Search(item.Previous)
+		existingPrevious, err := t.search(item.Previous)
 		if err != nil {
 			return err
 		}
@@ -103,7 +104,11 @@ func (t *Treee) Add(item branch.Leaf) error {
 		idx := modulo.Uint64()
 		targetBranch, exists := currentNode.ChildAt(idx)
 		if !exists || targetBranch.IsEmpty() {
-			targetBranch.Assign(item)
+			if !targetBranch.Assign(&item) {
+				// This shouldn't happen so we'd better log it
+				log.Crit("Impossible to assign non-pointer", "leafPtr", &item)
+				return utils.NewNotAPointerError()
+			}
 			previous.Next = item.ID
 			origin.Previous = item.ID
 			t.size++
@@ -119,7 +124,11 @@ func (t *Treee) Add(item branch.Leaf) error {
 			newNode := branch.NewNode(nextPrime)
 			newNode.AddLeaf(existingLeaf)
 			newNode.AddLeaf(&item)
-			targetBranch.Assign(*newNode)
+			if !targetBranch.Assign(newNode) {
+				// This shouldn't happen so we'd better log it
+				log.Crit("Impossible to assign non-pointer", "nodePtr", newNode)
+				return utils.NewNotAPointerError()
+			}
 			previous.Next = item.ID
 			origin.Previous = item.ID
 			t.size++
@@ -168,12 +177,12 @@ func (t *Treee) Save() {
 		n, err := f.WriteString(t.PrintAll(false))
 		if err != nil {
 			t1 := time.Now().UnixNano()
-			log.Error("An error occurred while saving the index", "error", err, "after", t1-t0)
+			log.Error("An error occurred while saving the index", "error", err, "after", strconv.FormatInt((t1-t0)/int64(time.Millisecond), 10)+"ms")
 			saving = false
 			return
 		}
 		t1 := time.Now().UnixNano()
-		log.Info("Index saved", "size", size, "bytes", n, "duration", t1-t0)
+		log.Info("Index saved", "size", size, "bytes", n, "duration", strconv.FormatInt((t1-t0)/int64(time.Millisecond), 10)+"ms")
 		f.Close()
 		saving = false
 		return
@@ -334,7 +343,9 @@ func parse(node *branch.Node, arr []interface{}, actualSize *int) error {
 						if err != nil {
 							return err
 						}
-						b.Assign(newNode)
+						if !b.Assign(newNode) {
+							return utils.NewNotAPointerError()
+						}
 					} else {
 						if _, ok := value["id"]; ok {
 							position, _ := value["position"].(float64)
@@ -347,7 +358,9 @@ func parse(node *branch.Node, arr []interface{}, actualSize *int) error {
 								Previous: model.Hash(value["previous"].(string)),
 								Next:     model.Hash(value["next"].(string)),
 							}
-							b.Assign(leaf)
+							if !b.Assign(&leaf) {
+								return utils.NewNotAPointerError()
+							}
 						}
 					}
 				}
