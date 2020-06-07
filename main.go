@@ -1,6 +1,10 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/cyrildever/treee/api"
 	"github.com/cyrildever/treee/common/logger"
 	"github.com/cyrildever/treee/config"
@@ -11,6 +15,8 @@ import (
  *
  *	To launch the Treee indexing engine as a micro-service:
  *	`$ ./treee -p 7001 -h localhost -init 101`
+ *
+ *	Stop it with Ctrl^c
  */
 func main() {
 	log := logger.Init("main", "application")
@@ -34,5 +40,19 @@ func main() {
 
 	index.Current = treee
 
+	willGracefullyStopIndex()
+
 	api.InitHTTPServer(conf)
+}
+
+// willGracefullyStopIndex ...
+func willGracefullyStopIndex() {
+	log := logger.Init("main", "terminating")
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		log.Info("Goodbye ~")
+		os.Exit(1)
+	}()
 }
