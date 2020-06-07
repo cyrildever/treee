@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"sync"
 
 	"github.com/cyrildever/treee/api/handlers/schema"
 	"github.com/cyrildever/treee/common/http_errors"
@@ -35,14 +36,40 @@ func GetLeaf(request *routing.Context) error {
 		return http_errors.SetInvalidParam(request, requestID, "missing at least one leaf id")
 	}
 
-	var resp []branch.Leaf
-	for _, id := range ids {
-		if leaf, err := index.Current.Search(id); err == nil {
-			resp = append(resp, *leaf)
+	var res []branch.Leaf
+
+	if len(ids) == 1 {
+		if leaf, err := index.Current.Search(ids[0]); err == nil {
+			res = append(res, *leaf)
+		}
+	} else {
+		var resp = make(chan branch.Leaf, len(ids))
+		var wg sync.WaitGroup
+		for _, id := range ids {
+			wg.Add(1)
+			go func(wg *sync.WaitGroup, id model.Hash, resp chan branch.Leaf) {
+				defer wg.Done()
+				if leaf, err := index.Current.Search(id); err == nil {
+					resp <- *leaf
+				} else {
+					resp <- branch.Leaf{}
+				}
+			}(&wg, id, resp)
+		}
+		wg.Wait()
+		close(resp)
+		for r := range resp {
+			if r.ID.NonEmpty() {
+				res = append(res, r)
+			}
 		}
 	}
 
-	return sendResponse("GetLeaf", request, requestID, resp, nil)
+	if len(res) == 0 {
+		return http_errors.SetNotFoundError(request, requestID)
+	}
+
+	return sendResponse("GetLeaf", request, requestID, res, nil)
 }
 
 // PostLeaf ...

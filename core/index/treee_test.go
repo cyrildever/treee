@@ -2,6 +2,7 @@ package index_test
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -119,8 +120,32 @@ func TestScalability(t *testing.T) {
 	}
 	wg.Wait()
 	t1 := time.Now().UnixNano()
-	fmt.Printf("test for %d rounds completed in %d ms\n", rounds, (t1-t0)/int64(time.Millisecond))
+	fmt.Printf("inserting %d leaves completed in %d ms\n", rounds, (t1-t0)/int64(time.Millisecond))
 	assert.Equal(t, treee.Size(), uint64(rounds))
 
-	// assert.Assert(t, false) // TODO Uncomment to get time
+	var resp = make(chan branch.Leaf, rounds*100)
+	t0 = time.Now().UnixNano()
+	for i := 0; i < rounds*100; i++ {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, i int64, treee *index.Treee, resp chan branch.Leaf) {
+			defer wg.Done()
+			id := model.Hash(fmt.Sprintf("%0x", strconv.FormatInt(int64(rand.Intn(rounds)), 16)))
+			found, err := treee.Search(id)
+			if err != nil {
+				fmt.Println(err)
+			}
+			resp <- *found
+		}(&wg, int64(i), treee, resp)
+	}
+	wg.Wait()
+	t1 = time.Now().UnixNano()
+	fmt.Printf("searching %d ids completed in %d ms\n", rounds*100, (t1-t0)/int64(time.Millisecond))
+	results := 0
+	close(resp)
+	for range resp {
+		results++
+	}
+	assert.Equal(t, results, rounds*100)
+
+	// assert.Assert(t, false) // TODO Uncomment to get performance logs
 }

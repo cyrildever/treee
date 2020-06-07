@@ -109,7 +109,7 @@ if found, err := treee.Search(leaf.ID); err == nil {
 }
 ```
 
-For better performance, you should put your search requests in different goroutines.
+For better performance, you should put your search requests in different goroutines (see `GetLeaf()` implementation in [api/handlers/leaf.go](api/handlers/leaf.go) file for example).
 
 For debugging or storage purposes, you might want to use the `PrintAll()` method on the `Treee` index to print all recorded leaves to a writer (passing it `true` as argument for beautifying the printed JSON, or `false` for the raw string).
 ```golang
@@ -162,7 +162,7 @@ This endpoint searches items based on the passed IDs.
 
 It expects an array of IDs as `ids` query argument, eg. `http://localhost:7000/api/leaf?ids=1234567890abcdef[...]&ids=fedcba0987654321[...]`
 
-It returns a JSON object respecting the following format:
+It returns a status code `200` along with a JSON object respecting the following format:
 ```json
 [
   {
@@ -176,6 +176,8 @@ It returns a JSON object respecting the following format:
   [...]
 ]
 ```
+
+In case no item were found, it returns a `404` status code with an empty body.
 
 * `POST /leaf`
 
@@ -207,6 +209,13 @@ The list of status codes (and their meaning) is as follows:
   - `404`: passed previous item not found;
   - `412`: something in the passed data caused the server to fail (incorrect JSON format, ...);
   - `500`: an error occurred on the server.
+
+
+### Performance
+
+On an Apple MacBook Pro 2.3 GHz Intel Core i9 with 16 Go DDR4 RAM clocked at 2400 MHz, I observed the following performances when using `101` as init prime:
+- insertion: 10,000 additions in 300ms (~120 millions per hour);
+- search: 1,000,000 requests in 500ms, ie. approx. 2 MHz (~7.2 billions per hour).
 
 
 ### License

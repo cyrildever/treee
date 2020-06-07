@@ -11,7 +11,7 @@ import (
 func TestHash(t *testing.T) {
 	nonHash := "123"
 	_, err := model.Hash(nonHash).String()
-	assert.Error(t, err, "invalid hash string")
+	assert.Error(t, err, "invalid hash string: "+nonHash)
 
 	valid := "123a"
 	str, err := model.Hash(valid).String()

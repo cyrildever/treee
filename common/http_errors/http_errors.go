@@ -43,6 +43,13 @@ func SetMarshallingError(request *routing.Context, requestID string) error {
 	return nil
 }
 
+// SetNotFoundError ...
+func SetNotFoundError(request *routing.Context, requestID string) error {
+	request.Response.Header.Set("X-Request-ID", requestID)
+	request.Response.SetStatusCode(fasthttp.StatusNotFound)
+	return nil
+}
+
 // SetRPCError ...
 func SetRPCError(err error, request *routing.Context, requestID string) error {
 	errorStatus, _ := status.FromError(err)
