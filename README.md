@@ -90,7 +90,10 @@ import (
 
 // Instantiate default index (could be any prime number up to the 1000th existing prime number,
 // but should be much lower to better leverage the solution, and if 0 will use the default INIT_PRIME value)
-treee := index.Treee(index.INIT_PRIME)
+treee, err := index.New(index.INIT_PRIME)
+if err != nil {
+  // Handle error
+}
 
 // Add to index
 leaf := branch.Leaf{
@@ -98,7 +101,7 @@ leaf := branch.Leaf{
   Position: 0,
   Size: 100,
 }
-err := treee.Add(leaf)
+err = treee.Add(leaf)
 if err != nil {
   // Handle error
 }
@@ -129,18 +132,20 @@ You can simply build the executable and start an instance of the Treee&trade; in
 
 ```console
 $ git clone https://github.com/cyrildever/treee.git && cd treee && go build
-$ ./treee -p 7001 -h localhost -init 101
+$ ./treee -port 7001 -host localhost -init 101
 ```
 
 ```
 Usage of ./treee:
-  -f string
+  -file string
         File path to an existing index
-  -h string
+  -host string
         Host address (default "0.0.0.0")
   -init string
         Initial prime number to use for the index (default "0")
-  -p string
+  -perm
+        Activate permanence (default true)
+  -port string
         HTTP port number (default "7000")
 ```
 
@@ -150,7 +155,8 @@ If set, the following environment variables will override any corresponding defa
 - `HOST`: the host address;
 - `HTTP_PORT`: the HTTP port number to use;
 - `INDEX_PATH`: the path to the index file in JSON format;
-- `INIT_PRIME`: the initial prime number (note that it won't have any effect if using a file because the latter will prevail).
+- `INIT_PRIME`: the initial prime number (note that it won't have any effect if using a file because the latter will prevail);
+- `USE_PERMANENCE`: set `false` to disable the use of saving the index into a file.
 
 ##### API
 

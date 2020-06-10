@@ -33,8 +33,10 @@ const (
 type Treee struct {
 	InitPrime uint64
 	sync.RWMutex
-	trunk *branch.Node
-	size  uint64
+	trunk              *branch.Node
+	size               uint64
+	permanence         bool
+	overridePermanence bool
 }
 
 //--- METHODS
@@ -160,7 +162,7 @@ func (t *Treee) Save() {
 	log := logger.Init("index", "Save")
 	conf, _ := config.GetConfig()
 
-	if !saving && !conf.IsTestEnvironment() {
+	if !saving && (t.permanence || (!t.overridePermanence && conf.UsePermanence)) && !conf.IsTestEnvironment() {
 		saving = true
 		t0 := time.Now().UnixNano()
 		path := conf.IndexPath
@@ -236,6 +238,14 @@ func (t *Treee) Size() uint64 {
 	defer t.RUnlock()
 
 	return t.size
+}
+
+// UsePermanence forces the index to be permanent or not, overriding configuration information
+func (t *Treee) UsePermanence(value bool) {
+	conf, _ := config.GetConfig()
+	conf.UsePermanence = value
+	t.permanence = value
+	t.overridePermanence = true
 }
 
 //--- FUNCTIONS

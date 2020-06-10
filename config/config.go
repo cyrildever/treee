@@ -13,10 +13,11 @@ import (
 
 // Config ...
 type Config struct {
-	HTTPPort  string
-	Host      string
-	InitPrime uint64
-	IndexPath string
+	HTTPPort      string
+	Host          string
+	InitPrime     uint64
+	IndexPath     string
+	UsePermanence bool
 }
 
 var singleton *Config
@@ -36,6 +37,7 @@ func (c *Config) populateWithEnv() {
 	setString("HOST", &c.Host)
 	setUintOrPanic("INIT_PRIME", &c.InitPrime)
 	setString("INDEX_PATH", &c.IndexPath)
+	setBoolean("PERMANENT_INDEX", &c.UsePermanence)
 }
 
 //--- FUNCTIONS
@@ -50,10 +52,11 @@ func InitConfig(isTest bool) (*Config, error) {
 func GetConfig() (*Config, error) {
 	once.Do(func() {
 		singleton = &Config{}
-		httpPort := flag.String("p", "7000", "HTTP port number")
-		host := flag.String("h", "0.0.0.0", "Host address")
-		indexPath := flag.String("f", "", "File path to an existing index")
+		httpPort := flag.String("port", "7000", "HTTP port number")
+		host := flag.String("host", "0.0.0.0", "Host address")
+		indexPath := flag.String("file", "", "File path to an existing index")
 		initPrime := flag.String("init", "0", "Initial prime number to use for the index")
+		usePermanence := flag.Bool("perm", true, "Activate permanence")
 
 		flag.Parse()
 
@@ -68,10 +71,18 @@ func GetConfig() (*Config, error) {
 			}
 			singleton.InitPrime = p
 		}
+		singleton.UsePermanence = *usePermanence
 
 		singleton.populateWithEnv()
 	})
 	return singleton, err
+}
+
+func setBoolean(envName string, shouldChange *bool) {
+	str := os.Getenv(envName)
+	if v, err := strconv.ParseBool(str); err == nil {
+		*shouldChange = v
+	}
 }
 
 func setString(envName string, shouldChange *string) {

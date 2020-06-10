@@ -2,7 +2,7 @@ version: '2'
 
 services:
   treee:
-    # image: edgewhere/treee:1.0.0
+    # image: edgewhere/treee:1.1.0
     build: .
     volumes:
       - data-treee:/home/treee/saved
@@ -14,6 +14,9 @@ services:
     environment:
       HOST: treee-1
       HTTP_PORT: 7000
+      INIT_PRIME: 101
+      INDEX_PATH: ./saved/treee-1.json
+      PERMANENT_INDEX: true
 
 volumes:
   data-treee:
