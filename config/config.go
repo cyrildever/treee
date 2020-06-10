@@ -13,11 +13,11 @@ import (
 
 // Config ...
 type Config struct {
-	HTTPPort      string
-	Host          string
-	InitPrime     uint64
-	IndexPath     string
-	UsePermanence bool
+	HTTPPort       string
+	Host           string
+	InitPrime      uint64
+	IndexPath      string
+	UsePersistence bool
 }
 
 var singleton *Config
@@ -37,7 +37,7 @@ func (c *Config) populateWithEnv() {
 	setString("HOST", &c.Host)
 	setUintOrPanic("INIT_PRIME", &c.InitPrime)
 	setString("INDEX_PATH", &c.IndexPath)
-	setBoolean("PERMANENT_INDEX", &c.UsePermanence)
+	setBoolean("PERMANENT_INDEX", &c.UsePersistence)
 }
 
 //--- FUNCTIONS
@@ -56,7 +56,7 @@ func GetConfig() (*Config, error) {
 		host := flag.String("host", "0.0.0.0", "Host address")
 		indexPath := flag.String("file", "", "File path to an existing index")
 		initPrime := flag.String("init", "0", "Initial prime number to use for the index")
-		usePermanence := flag.Bool("perm", true, "Activate permanence")
+		usePersistence := flag.Bool("persist", true, "Activate persistence")
 
 		flag.Parse()
 
@@ -71,7 +71,7 @@ func GetConfig() (*Config, error) {
 			}
 			singleton.InitPrime = p
 		}
-		singleton.UsePermanence = *usePermanence
+		singleton.UsePersistence = *usePersistence
 
 		singleton.populateWithEnv()
 	})

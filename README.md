@@ -120,9 +120,13 @@ For debugging or storage purposes, you might want to use the `PrintAll()` method
 fmt.Println(treee.PrintAll(true))
 ```
 
-Permanence of the index is achieved through the use of the automatic save made upon insertion, and the use of the `Load()` function instead of Treee instantiation with `New()` at start-up.
+Persistence of the index is achieved through the use of the automatic save made upon insertion, and the use of the `Load()` function instead of Treee instantiation with `New()` at start-up.
 ```golang
 treee, err := index.Load("path/to/treee.json") // If empty, will use "./saved/treee.json"
+```
+It could be disabled using the corresponding environment variable or flag in the command line, or even programmatically:
+```golang
+treee.UsePersistence(false) // If you're positive you don't want it
 ```
 
 
@@ -143,8 +147,8 @@ Usage of ./treee:
         Host address (default "0.0.0.0")
   -init string
         Initial prime number to use for the index (default "0")
-  -perm
-        Activate permanence (default true)
+  -persist
+        Activate persistence (default true)
   -port string
         HTTP port number (default "7000")
 ```
@@ -156,7 +160,7 @@ If set, the following environment variables will override any corresponding defa
 - `HTTP_PORT`: the HTTP port number to use;
 - `INDEX_PATH`: the path to the index file in JSON format;
 - `INIT_PRIME`: the initial prime number (note that it won't have any effect if using a file because the latter will prevail);
-- `USE_PERMANENCE`: set `false` to disable the use of saving the index into a file.
+- `USE_PERSISTENCE`: set `false` to disable the use of saving the index into a file.
 
 ##### API
 
@@ -221,7 +225,7 @@ The list of status codes (and their meaning) is as follows:
 
 On an Apple MacBook Pro 2.3 GHz Intel Core i9 with 16 Go DDR4 RAM clocked at 2400 MHz, I observed the following performances when using `101` as init prime:
 - insertion: 10,000 additions in ~300ms (120 millions per hour);
-- search: 1,000,000 requests in ~500ms, ie. approx. 2 MHz (7.2 billions per hour).
+- search: 1,000,000 requests in ~500ms, ie. approx. 2 MHz (over 7 billions per hour).
 
 
 ### License
