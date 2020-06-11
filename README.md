@@ -170,7 +170,7 @@ The following endpoints are available under the `/api` group:
 
 This endpoint searches items based on the passed IDs.
 
-It expects an array of IDs as `ids` query argument, eg. `http://localhost:7000/api/leaf?ids=1234567890abcdef[...]&ids=fedcba0987654321[...]`
+It expects an array of IDs as `ids` query argument and an optional `takeLast` boolean (default to `false`), eg. `http://localhost:7000/api/leaf?ids=1234567890abcdef[...]&ids=fedcba0987654321[...]&takeLast=true`
 
 It returns a status code `200` along with a JSON object respecting the following format:
 ```json
