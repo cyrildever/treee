@@ -31,7 +31,7 @@ func GetLeaf(request *routing.Context) error {
 			ids = append(ids, model.Hash(string(value)))
 		}
 	})
-	takeLast := request.QueryArgs().GetBool("last")
+	takeLast := request.QueryArgs().GetBool("takeLast")
 
 	if len(ids) == 0 {
 		log.Info("Empty query string")
