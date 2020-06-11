@@ -12,6 +12,7 @@ import (
 
 	"github.com/cyrildever/treee/core/index"
 	"github.com/cyrildever/treee/core/index/branch"
+	"github.com/cyrildever/treee/core/index/search"
 	"github.com/cyrildever/treee/core/model"
 	"gotest.tools/assert"
 )
@@ -86,6 +87,43 @@ func TestTreee(t *testing.T) {
 	assert.Equal(t, found.Size, secondLeaf.Size)
 }
 
+// TestLastOrSearch ...
+func TestLastOrSearch(t *testing.T) {
+	treee, _ := index.New(index.INIT_PRIME)
+	id := model.Hash("1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+	firstLeaf := branch.Leaf{
+		ID:       id,
+		Position: 0,
+		Size:     100,
+	}
+	treee.Add(firstLeaf)
+	secondLeaf := branch.Leaf{
+		ID:       model.Hash("fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"),
+		Position: 100,
+		Size:     50,
+		Previous: firstLeaf.ID,
+	}
+	treee.Add(secondLeaf)
+
+	var engine search.Engine
+	for i := 0; i < 2; i++ {
+		if i%2 == 0 {
+			engine = treee.Last
+		} else {
+			engine = treee.Search
+		}
+		found, err := engine(id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if i%2 == 0 {
+			assert.Equal(t, found.ID, secondLeaf.ID, "Last should find second leaf")
+		} else {
+			assert.Equal(t, found.ID, firstLeaf.ID, "Search should find first leaf")
+		}
+	}
+}
+
 // TestLoad ...
 func TestLoad(t *testing.T) {
 	pwd, _ := os.Getwd()
@@ -123,19 +161,25 @@ func TestScalability(t *testing.T) {
 	fmt.Printf("inserting %d leaves completed in %d ms\n", rounds, (t1-t0)/int64(time.Millisecond))
 	assert.Equal(t, treee.Size(), uint64(rounds))
 
+	var engine search.Engine
 	var resp = make(chan branch.Leaf, rounds*100)
 	t0 = time.Now().UnixNano()
 	for i := 0; i < rounds*100; i++ {
 		wg.Add(1)
-		go func(wg *sync.WaitGroup, i int64, treee *index.Treee, resp chan branch.Leaf) {
+		if i%2 == 0 {
+			engine = treee.Last
+		} else {
+			engine = treee.Search
+		}
+		go func(wg *sync.WaitGroup, i int64, engine search.Engine, treee *index.Treee, resp chan branch.Leaf) {
 			defer wg.Done()
 			id := model.Hash(fmt.Sprintf("%0x", strconv.FormatInt(int64(rand.Intn(rounds)), 16)))
-			found, err := treee.Search(id)
+			found, err := engine(id)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("i", i, "error", err)
 			}
 			resp <- *found
-		}(&wg, int64(i), treee, resp)
+		}(&wg, int64(i), engine, treee, resp)
 	}
 	wg.Wait()
 	t1 = time.Now().UnixNano()

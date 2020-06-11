@@ -141,6 +141,32 @@ func (t *Treee) Add(item branch.Leaf) error {
 	}
 }
 
+// Last finds the last transaction in a subchain from any ID of the subchain;
+// it implements `search.Engine`
+func (t *Treee) Last(id model.Hash) (lastInChain *branch.Leaf, err error) {
+	t.RLock()
+	defer t.RUnlock()
+
+	found, err := t.search(id)
+	if err != nil {
+		return
+	}
+	if found.Previous == found.ID || !found.Next.NonEmpty() {
+		lastInChain = found
+		return
+	}
+	origin, err := t.search(found.Origin)
+	if err != nil {
+		return
+	}
+	last, err := t.search(origin.Previous) // By definition of the circular linked list
+	if err != nil {
+		return
+	}
+	lastInChain = last
+	return
+}
+
 // PrintAll ...
 // Use with caution!
 func (t *Treee) PrintAll(beautify bool) string {
@@ -191,7 +217,8 @@ func (t *Treee) Save() {
 	}
 }
 
-// Search ...
+// Search fetches a Leaf from the Treee index;
+// it implements `search.Engine`
 func (t *Treee) Search(ID model.Hash) (found *branch.Leaf, err error) {
 	t.RLock()
 	defer t.RUnlock()

@@ -9,6 +9,7 @@ import (
 	"github.com/cyrildever/treee/common/logger"
 	"github.com/cyrildever/treee/core/index"
 	"github.com/cyrildever/treee/core/index/branch"
+	"github.com/cyrildever/treee/core/index/search"
 	"github.com/cyrildever/treee/core/model"
 	"github.com/cyrildever/treee/core/model/response"
 	routing "github.com/qiangxue/fasthttp-routing"
@@ -30,6 +31,7 @@ func GetLeaf(request *routing.Context) error {
 			ids = append(ids, model.Hash(string(value)))
 		}
 	})
+	takeLast := request.QueryArgs().GetBool("last")
 
 	if len(ids) == 0 {
 		log.Info("Empty query string")
@@ -39,22 +41,34 @@ func GetLeaf(request *routing.Context) error {
 	var res []branch.Leaf
 
 	if len(ids) == 1 {
-		if leaf, err := index.Current.Search(ids[0]); err == nil {
-			res = append(res, *leaf)
+		if takeLast {
+			if leaf, err := index.Current.Last(ids[0]); err == nil {
+				res = append(res, *leaf)
+			}
+		} else {
+			if leaf, err := index.Current.Search(ids[0]); err == nil {
+				res = append(res, *leaf)
+			}
 		}
 	} else {
+		var engine search.Engine
+		if takeLast {
+			engine = index.Current.Last
+		} else {
+			engine = index.Current.Search
+		}
 		var resp = make(chan branch.Leaf, len(ids))
 		var wg sync.WaitGroup
 		for _, id := range ids {
 			wg.Add(1)
-			go func(wg *sync.WaitGroup, id model.Hash, resp chan branch.Leaf) {
+			go func(wg *sync.WaitGroup, engine search.Engine, id model.Hash, resp chan branch.Leaf) {
 				defer wg.Done()
-				if leaf, err := index.Current.Search(id); err == nil {
+				if leaf, err := engine(id); err == nil {
 					resp <- *leaf
 				} else {
 					resp <- branch.Leaf{}
 				}
-			}(&wg, id, resp)
+			}(&wg, engine, id, resp)
 		}
 		wg.Wait()
 		close(resp)
