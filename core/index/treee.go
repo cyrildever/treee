@@ -141,7 +141,7 @@ func (t *Treee) Add(item branch.Leaf) error {
 	}
 }
 
-// Last finds the last transaction in a subchain from any ID of the subchain;
+// Last finds the last item in a subchain from any ID of the subchain;
 // it implements `search.Engine`
 func (t *Treee) Last(id model.Hash) (lastInChain *branch.Leaf, err error) {
 	t.RLock()
@@ -151,7 +151,7 @@ func (t *Treee) Last(id model.Hash) (lastInChain *branch.Leaf, err error) {
 	if err != nil {
 		return
 	}
-	if found.Previous == found.ID || !found.Next.NonEmpty() {
+	if found.Previous == found.ID || found.Next.IsEmpty() {
 		lastInChain = found
 		return
 	}
@@ -167,6 +167,40 @@ func (t *Treee) Last(id model.Hash) (lastInChain *branch.Leaf, err error) {
 	return
 }
 
+// Line fetches the whole list of items in a subchain
+func (t *Treee) Line(id model.Hash) (subchain []*branch.Leaf, err error) {
+	t.RLock()
+	defer t.RUnlock()
+
+	found, err := t.search(id)
+	if err != nil {
+		return
+	}
+	if found.ID == found.Origin && found.Next.IsEmpty() {
+		return []*branch.Leaf{found}, nil
+	}
+	origin, err := t.search(found.Origin)
+	if err != nil {
+		return
+	}
+	subchain = append(subchain, origin)
+	current := origin.ID
+	next := origin.Next
+	for next.NonEmpty() && next != current {
+		following, e := t.search(next)
+		if e != nil {
+			if _, ok := e.(*exception.NotFoundError); ok {
+				err = e
+			}
+			return
+		}
+		subchain = append(subchain, following)
+		current = following.ID
+		next = following.Next
+	}
+	return
+}
+
 // PrintAll ...
 // Use with caution!
 func (t *Treee) PrintAll(beautify bool) string {
@@ -176,7 +210,7 @@ func (t *Treee) PrintAll(beautify bool) string {
 	str := `{"initPrime":` + strconv.FormatUint(t.InitPrime, 10) + `,"trunk":` + t.trunk.Print() + `,"size":` + strconv.FormatUint(t.size, 10) + "}"
 	if beautify {
 		var js interface{}
-		json.Unmarshal([]byte(str), &js)
+		_ = json.Unmarshal([]byte(str), &js)
 		bytes, _ := json.MarshalIndent(js, "", "  ")
 		str = string(bytes)
 	}

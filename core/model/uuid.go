@@ -34,6 +34,11 @@ func (u UUID) String() (str string, err error) {
 	return strings.ToLower(string(u)), nil
 }
 
+// IsEmpty ...
+func (u UUID) IsEmpty() bool {
+	return !u.NonEmpty()
+}
+
 // NonEmpty ...
 func (u UUID) NonEmpty() bool {
 	str, err := u.String()

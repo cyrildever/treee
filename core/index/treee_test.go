@@ -48,8 +48,9 @@ func TestTreee(t *testing.T) {
 		ID:       model.Hash("fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"),
 		Position: 100,
 		Size:     50,
+		Previous: firstLeaf.ID,
 	}
-	treee.Add(secondLeaf)
+	_ = treee.Add(secondLeaf)
 	assert.Equal(t, treee.Size(), uint64(2))
 
 	thirdLeaf := branch.Leaf{
@@ -57,7 +58,7 @@ func TestTreee(t *testing.T) {
 		Position: 150,
 		Size:     10,
 	}
-	treee.Add(thirdLeaf)
+	_ = treee.Add(thirdLeaf)
 	assert.Equal(t, treee.Size(), uint64(3))
 
 	fmt.Println(treee.PrintAll(true)) // TODO Only prints if tests failed
@@ -85,6 +86,21 @@ func TestTreee(t *testing.T) {
 	assert.Equal(t, found.ID, secondLeaf.ID)
 	assert.Equal(t, found.Position, secondLeaf.Position)
 	assert.Equal(t, found.Size, secondLeaf.Size)
+
+	line, err := treee.Line(secondLeaf.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, len(line), 2)
+	assert.Equal(t, line[0].ID, firstLeaf.ID)
+	assert.Equal(t, line[1].ID, secondLeaf.ID)
+
+	ids := model.Hashes{}
+	for _, l := range line {
+		ids = append(ids, l.ID)
+	}
+	assert.Assert(t, ids.Contains(firstLeaf.ID))
+	assert.Assert(t, !ids.Contains(thirdLeaf.ID))
 }
 
 // TestLastOrSearch ...
@@ -96,14 +112,14 @@ func TestLastOrSearch(t *testing.T) {
 		Position: 0,
 		Size:     100,
 	}
-	treee.Add(firstLeaf)
+	_ = treee.Add(firstLeaf)
 	secondLeaf := branch.Leaf{
 		ID:       model.Hash("fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"),
 		Position: 100,
 		Size:     50,
 		Previous: firstLeaf.ID,
 	}
-	treee.Add(secondLeaf)
+	_ = treee.Add(secondLeaf)
 
 	var engine search.Engine
 	for i := 0; i < 2; i++ {

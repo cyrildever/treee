@@ -1,6 +1,7 @@
 package model
 
 import (
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -34,6 +35,11 @@ func (h Hash) String() (str string, err error) {
 	return strings.ToLower(string(h)), nil
 }
 
+// IsEmpty ...
+func (h Hash) IsEmpty() bool {
+	return !h.NonEmpty()
+}
+
 // NonEmpty ...
 func (h Hash) NonEmpty() bool {
 	str, err := h.String()
@@ -56,4 +62,35 @@ func ToHash(bytes []byte) Hash {
 // IsHashedString ...
 func IsHashedString(input string) bool {
 	return regexHash.MatchString(input)
+}
+
+// Hashes is an array of Hash.
+type Hashes []Hash
+
+func (h Hashes) Len() int           { return len(h) }
+func (h Hashes) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h Hashes) Less(i, j int) bool { return h[i] < h[j] }
+
+// Equals ...
+func (h *Hashes) Equals(to *Hashes) bool {
+	length := h.Len()
+	if length != to.Len() {
+		return false
+	}
+	for i := 0; i < length; i++ {
+		if !reflect.DeepEqual((*h)[i], (*to)[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+// Contains ...
+func (h Hashes) Contains(item Hash) bool {
+	for _, hash := range h {
+		if hash == item {
+			return true
+		}
+	}
+	return false
 }

@@ -189,6 +189,22 @@ It returns a status code `200` along with a JSON object respecting the following
 
 In case no item were found, it returns a `404` status code with an empty body.
 
+* `GET /line`
+
+This endpoint returns all the IDs in the same subchain/line.
+
+It expects any ID of a line as `id` query argument, eg. `http://localhost:7000/api/line?id=1234567890abcdef[...]`
+
+It returns a status code `200` long with the following JSON sorted array of IDs (index `0` being the origin):
+```json
+[
+  "1234567890abcdef[...]",
+  "fedcba0987654321[...]"
+]
+```
+
+In case no item were found, it returns a `404` status code with an empty body.
+
 * `POST /leaf`
 
 This endpoint adds an item to the index.

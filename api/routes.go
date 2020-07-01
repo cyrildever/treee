@@ -10,6 +10,7 @@ func Routes(router *routing.Router) {
 	apiRouter := router.Group("/api")
 	apiRouter.Options("*", setCorsHeader)
 	(*apiRouter).Get("/leaf", setCorsHeader, handlers.GetLeaf)
+	(*apiRouter).Get("/line", handlers.GetLine)
 	(*apiRouter).Post("/leaf", setCorsHeader, handlers.PostLeaf)
 }
 
