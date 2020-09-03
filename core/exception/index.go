@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+//--- ERRORS
+
 // AlreadyExistsInIndexError ...
 type AlreadyExistsInIndexError struct {
 	message string

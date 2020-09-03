@@ -9,11 +9,6 @@ type Branch struct {
 	nature interface{}
 }
 
-// Printable ...
-type Printable interface {
-	Print() string
-}
-
 //--- METHODS
 
 // Assign ...

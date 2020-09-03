@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+//--- ERRORS
+
 // InvalidHashStringError ...
 type InvalidHashStringError struct {
 	message string

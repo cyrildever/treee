@@ -1,8 +1,10 @@
 package response
 
+//--- TYPES
+
 // PostLeaf ...
 type PostLeaf struct {
-	Code 	int		`json:"code"`
-	Result	string	`json:"result,omitempty"`
-	Error	string	`json:"error,omitempty"`
+	Code   int    `json:"code"`
+	Result string `json:"result,omitempty"`
+	Error  string `json:"error,omitempty"`
 }
