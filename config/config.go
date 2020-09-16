@@ -52,11 +52,11 @@ func InitConfig(isTest bool) (*Config, error) {
 func GetConfig() (*Config, error) {
 	once.Do(func() {
 		singleton = &Config{}
-		httpPort := flag.String("port", "7000", "HTTP port number")
-		host := flag.String("host", "0.0.0.0", "Host address")
-		indexPath := flag.String("file", "", "File path to an existing index")
-		initPrime := flag.String("init", "0", "Initial prime number to use for the index")
-		usePersistence := flag.Bool("persist", true, "Activate persistence")
+		httpPort := flag.String("t.port", "7000", "HTTP port number")
+		host := flag.String("t.host", "0.0.0.0", "Host address")
+		indexPath := flag.String("t.file", "", "File path to an existing index")
+		initPrime := flag.String("t.init", "0", "Initial prime number to use for the index")
+		usePersistence := flag.Bool("t.persist", true, "Activate persistence")
 
 		flag.Parse()
 

@@ -136,20 +136,20 @@ You can simply build the executable and start an instance of the Treee&trade; in
 
 ```console
 $ git clone https://github.com/cyrildever/treee.git && cd treee && go build
-$ ./treee -port 7001 -host localhost -init 101
+$ ./treee -t.port 7001 -t.host localhost -t.init 101
 ```
 
 ```
 Usage of ./treee:
-  -file string
+  -t.file string
         File path to an existing index
-  -host string
+  -t.host string
         Host address (default "0.0.0.0")
-  -init string
+  -t.init string
         Initial prime number to use for the index (default "0")
-  -persist
+  -t.persist
         Activate persistence (default true)
-  -port string
+  -t.port string
         HTTP port number (default "7000")
 ```
 

@@ -14,7 +14,7 @@ import (
 /** Usage:
  *
  *	To launch the Treee indexing engine as a micro-service:
- *	`$ ./treee -port 7001 -host localhost -init 101`
+ *	`$ ./treee -t.port 7001 -t.host localhost -t.init 101`
  *
  *	Stop it with Ctrl^c
  */

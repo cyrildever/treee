@@ -8,10 +8,7 @@ import (
 
 // IsPointer returns `true` if the passed item is a pointer, not a value
 func IsPointer(item interface{}) bool {
-	if reflect.ValueOf(item).Kind() == reflect.Ptr {
-		return true
-	}
-	return false
+	return reflect.ValueOf(item).Kind() == reflect.Ptr
 }
 
 // IsValue returns `true` if the passed item is a value, not a pointer
