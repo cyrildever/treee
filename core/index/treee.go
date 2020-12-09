@@ -302,12 +302,12 @@ func (t *Treee) Search(ID model.Hash) (found *branch.Leaf, err error) {
 }
 
 func (t *Treee) search(ID model.Hash) (found *branch.Leaf, err error) {
-	if ID.IsEmpty() {
-		return nil, exception.NewInvalidHashStringError("")
-	}
 	idStr, err := ID.String()
 	if err != nil {
 		return
+	}
+	if ID.IsEmpty() {
+		return nil, exception.NewInvalidHashStringError(idStr)
 	}
 	id := new(big.Int)
 	id.SetString(idStr, 16)
