@@ -1,6 +1,6 @@
 module github.com/cyrildever/treee
 
-go 1.12
+go 1.14
 
 require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
@@ -17,7 +17,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/stretchr/testify v1.6.1 // indirect
-	github.com/valyala/fasthttp v1.17.0
+	github.com/valyala/fasthttp v1.18.0
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
