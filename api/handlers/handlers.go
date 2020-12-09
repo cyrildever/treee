@@ -41,7 +41,7 @@ func createContext() (context.Context, context.CancelFunc, string, error) {
 	return ctx, cancel, requestIDStr, nil
 }
 
-func sendResponse(context string, request *routing.Context, requestID string, response interface{}, resErr error) error {
+func sendResponse(context string, request *routing.Context, requestID string, response interface{}, resErr error, statusCode ...int) error {
 	log := logger.InitHandler("handlers", context, requestID)
 	if resErr != nil {
 		log.Error("Response issue", "error", resErr)
@@ -59,7 +59,11 @@ func sendResponse(context string, request *routing.Context, requestID string, re
 		res = nil
 	}
 	request.Response.Header.Set("Content-Type", "application/json")
-	request.Response.SetStatusCode(200)
+	sc := 200
+	if len(statusCode) == 1 {
+		sc = statusCode[0]
+	}
+	request.Response.SetStatusCode(sc)
 	request.Response.SetBody(res)
 	return nil
 }

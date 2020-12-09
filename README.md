@@ -166,6 +166,27 @@ If set, the following environment variables will override any corresponding defa
 
 The following endpoints are available under the `/api` group:
 
+* `DELETE /leaf`
+
+This endpoint removes the passed items from the index.
+
+It expects an array of IDs as `ids` query argument, eg.
+```http
+DELETE /api/leaf?ids=1235467890abcdef[...]&ids=fedcba0987654321[...]
+User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+Host: treee.io
+Accept-Language: fr-FR
+Accept-Encoding: gzip, deflate
+Accept: application/json
+```
+
+It returns a `204` status code if all passed items were removed, or a `200` status code along with the following json list of undeleted IDs if some weren't removed:
+```json
+{
+  "ids": ["fedcba0987654321[...]"]
+}
+```
+
 * `GET /leaf`
 
 This endpoint searches items based on the passed IDs.
@@ -237,11 +258,16 @@ The list of status codes (and their meaning) is as follows:
   - `500`: an error occurred on the server.
 
 
-### Performance
+### Performances
 
-On an Apple MacBook Pro 2.3 GHz Intel Core i9 with 16 Go DDR4 RAM clocked at 2400 MHz, I observed the following performances when using `101` as init prime:
+In average, a basic machine should be able to ingest over 100 millions new records and handle about 5 billions search queries per hour.
+
+As an example, on an Apple MacBook Pro 2.3 GHz Intel Core i9 with 16 Go DDR4 RAM clocked at 2400 MHz, I observed the following performances when using `101` as init prime:
 - insertion: 10,000 additions in ~300ms (120 millions per hour);
 - search: 1,000,000 requests in ~500ms, ie. approx. 2 MHz (over 7 billions per hour).
+And on an Apple iMac 3.1 Ghz Intel Core i5 with 16 Go DDR4 RAM clocked at 2667 MHz also using `101` as init prime:
+- insertion: 10,000 additions in ~240ms (150 millions per hour);
+- search: 1,000,000 requests in ~780ms, ie. approx. 1.3 MHz (over 4.6 billions per hour).
 
 
 ### License

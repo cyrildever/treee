@@ -12,6 +12,7 @@ func Routes(router *routing.Router) {
 	(*apiRouter).Get("/leaf", setCorsHeader, handlers.GetLeaf)
 	(*apiRouter).Get("/line", handlers.GetLine)
 	(*apiRouter).Post("/leaf", setCorsHeader, handlers.PostLeaf)
+	(*apiRouter).Delete("/leaf", setCorsHeader, handlers.DeleteLeaf)
 }
 
 func setCorsHeader(request *routing.Context) error {

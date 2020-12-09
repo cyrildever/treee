@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"strings"
 	"sync"
 
 	"github.com/cyrildever/treee/api/handlers/schema"
 	"github.com/cyrildever/treee/common/http_errors"
 	"github.com/cyrildever/treee/common/logger"
+	"github.com/cyrildever/treee/core/exception"
 	"github.com/cyrildever/treee/core/index"
 	"github.com/cyrildever/treee/core/index/branch"
 	"github.com/cyrildever/treee/core/index/search"
@@ -131,4 +133,48 @@ func PostLeaf(request *routing.Context) error {
 		go index.Current.Save()
 	}
 	return err
+}
+
+func DeleteLeaf(request *routing.Context) error {
+	_, cancel, requestID, err := createContext()
+	log := logger.InitHandler("handlers", "DeleteLeaf", requestID)
+	if err != nil {
+		log.Error("Creating context error", "error", err)
+		return http_errors.SetInternalError(request, requestID)
+	}
+	defer cancel()
+
+	var ids model.Hashes
+	request.QueryArgs().VisitAll(func(key, value []byte) {
+		if string(key) == "ids" {
+			if string(value) != "" {
+				ids = append(ids, model.Hash(string(value)))
+			}
+		}
+	})
+
+	if len(ids) == 0 {
+		log.Info("Empty query string")
+		return http_errors.SetInvalidParam(request, requestID, "missing at least one leaf id")
+	}
+
+	var errs []string
+	for _, id := range ids {
+		if err := index.Current.Remove(id); err != nil {
+			if _, ok := err.(*exception.NotFoundError); !ok {
+				idStr, _ := id.String()
+				errs = append(errs, idStr)
+			}
+		}
+	}
+
+	if len(errs) > 0 {
+		log.Info("Unable to remove all passed leaves", "ids", strings.Join(errs, ","))
+		res := response.UndeletedResponse{
+			List: errs,
+		}
+		return sendResponse("DeleteLeaf", request, requestID, res, nil)
+	}
+
+	return sendResponse("DeleteLeaf", request, requestID, nil, nil, 204)
 }
