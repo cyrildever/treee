@@ -217,6 +217,47 @@ func (t *Treee) PrintAll(beautify bool) string {
 	return str
 }
 
+// Remove ...
+func (t *Treee) Remove(id model.Hash) error {
+	t.Lock()
+	defer t.Unlock()
+
+	found, err := t.search(id)
+	if err != nil {
+		return err
+	}
+	// 1- Remove all links
+	if found.Previous.NonEmpty() {
+		if previous, e := t.search(found.Previous); e == nil {
+			if found.Next.NonEmpty() {
+				previous.Next = found.Next
+				if next, e := t.search(found.Next); e == nil {
+					next.Previous = previous.ID
+				}
+			} else {
+				previous.Next = model.EmptyHash
+				if origin, e := t.search(found.Origin); e == nil {
+					origin.Previous = previous.ID
+				}
+			}
+		}
+	}
+
+	// 2- Make it an empty "shadow" leaf
+	// TODO Actually remove it from the Treee index
+	empty := branch.NewEmptyLeaf()
+	found.ID = empty.ID
+	found.Position = empty.Position
+	found.Size = empty.Size
+	found.Origin = empty.Origin
+	found.Previous = empty.Previous
+	found.Next = empty.Next
+
+	t.size--
+
+	return nil
+}
+
 // Save ...
 func (t *Treee) Save() {
 	log := logger.Init("index", "Save")
@@ -261,6 +302,9 @@ func (t *Treee) Search(ID model.Hash) (found *branch.Leaf, err error) {
 }
 
 func (t *Treee) search(ID model.Hash) (found *branch.Leaf, err error) {
+	if ID.IsEmpty() {
+		return nil, exception.NewInvalidHashStringError("")
+	}
 	idStr, err := ID.String()
 	if err != nil {
 		return
@@ -286,6 +330,11 @@ func (t *Treee) search(ID model.Hash) (found *branch.Leaf, err error) {
 			return
 		} else if targetBranch.IsLeaf() {
 			found = targetBranch.GetLeaf()
+			// TODO Get rid of this test when the Remove() method actually removes the leaf from the Treee index
+			if found.IsEmpty() {
+				found = nil
+				err = exception.NewNotFoundError(idStr)
+			}
 			return
 		} else if targetBranch.IsNode() {
 			currentNode = targetBranch.GetNode()

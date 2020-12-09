@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cyrildever/treee/core/exception"
 	"github.com/cyrildever/treee/core/index"
 	"github.com/cyrildever/treee/core/index/branch"
 	"github.com/cyrildever/treee/core/index/search"
@@ -101,6 +102,43 @@ func TestTreee(t *testing.T) {
 	}
 	assert.Assert(t, ids.Contains(firstLeaf.ID))
 	assert.Assert(t, !ids.Contains(thirdLeaf.ID))
+
+	// Delete
+	err = treee.Remove(thirdLeaf.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = treee.Search(thirdLeaf.ID)
+	assert.Error(t, err, "nothing found for ID: abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890")
+	_, ok := err.(*exception.NotFoundError)
+	assert.Assert(t, ok)
+	assert.Equal(t, treee.Size(), uint64(2))
+
+	// Re-add
+	reThirdLeaf := branch.Leaf{
+		ID:       model.Hash("abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"),
+		Position: 150,
+		Size:     10,
+	}
+	_ = treee.Add(reThirdLeaf)
+	assert.Equal(t, treee.Size(), uint64(3))
+
+	// Test again after remove/add operations
+	found, err = treee.Search(thirdLeaf.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, found.ID, thirdLeaf.ID)
+	assert.Equal(t, found.Position, thirdLeaf.Position)
+	assert.Equal(t, found.Size, thirdLeaf.Size)
+
+	found, err = treee.Search(secondLeaf.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, found.ID, secondLeaf.ID)
+	assert.Equal(t, found.Position, secondLeaf.Position)
+	assert.Equal(t, found.Size, secondLeaf.Size)
 }
 
 // TestLastOrSearch ...
@@ -207,5 +245,5 @@ func TestScalability(t *testing.T) {
 	}
 	assert.Equal(t, results, rounds*100)
 
-	// assert.Assert(t, false) // TODO Uncomment to get performance logs
+	assert.Assert(t, false) // TODO Uncomment to get performance logs
 }
