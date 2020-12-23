@@ -267,7 +267,7 @@ As an example, on an Apple MacBook Pro 2.3 GHz Intel Core i9 with 16 Go DDR4 RAM
 - search: 1,000,000 requests in ~500ms, ie. approx. 2 MHz (over 7 billions per hour).
 And on an Apple iMac 3.1 Ghz Intel Core i5 with 16 Go DDR4 RAM clocked at 2667 MHz also using `101` as init prime:
 - insertion: 10,000 additions in ~240ms (150 millions per hour);
-- search: 1,000,000 requests in ~780ms, ie. approx. 1.3 MHz (over 4.6 billions per hour).
+- search: 1,000,000 requests in ~750ms, ie. approx. 1.3 MHz (over 4.8 billions per hour).
 
 
 ### License

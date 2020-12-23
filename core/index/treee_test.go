@@ -245,5 +245,5 @@ func TestScalability(t *testing.T) {
 	}
 	assert.Equal(t, results, rounds*100)
 
-	assert.Assert(t, false) // TODO Uncomment to get performance logs
+	// assert.Assert(t, false) // TODO Uncomment to get performance logs
 }
