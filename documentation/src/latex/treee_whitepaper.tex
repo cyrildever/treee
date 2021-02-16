@@ -1,0 +1,182 @@
+% TREEE white paper
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside,twocolumn]{article}
+
+\usepackage{blindtext} % Package to generate dummy text throughout this template 
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+%\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{eufrak}
+\usepackage{graphicx} % For \scalebox
+
+\usepackage[english]{babel} % Language hyphenation and typographical rules
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+
+\usepackage{enumitem} % Customized lists
+\setlist[itemize]{noitemsep} % Make itemize lists more compact
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\arabic{subsection}} % roman numerals only for subsections
+\titleformat{\section}[block]{\Large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large\scshape}{\thesubsection.}{1em}{} % Change the look of the section titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{Crumbled Data Storage $\bullet$ Cyril Dever} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+\setlength{\headheight}{14pt}
+
+\usepackage{titling} % Customizing the title section
+
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage[symbol]{footmisc} % To use special character in footnote
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
+\usepackage{outlines}
+\usepackage[font=itshape]{quoting}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\SetKw{Continue}{continue}
+\SetKw{KwBy}{by}
+
+%----------------------------------------------------------------------------------------
+%	FUNCTIONS
+%----------------------------------------------------------------------------------------
+
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\bsfnote}{\textsuperscript{*}} % for reference to the base64 string note
+\newcommand{\hexnote}{\textsuperscript{$\dagger$}} % for reference to the hex string note
+\newcommand{\mod}[1]{\ \mathrm{mod}\ #1}
+
+%----------------------------------------------------------------------------------------
+%	LOW LEVEL SECTIONS
+%----------------------------------------------------------------------------------------
+
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4} % eq. subsubsubsection
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+%----------------------------------------------------------------------------------------
+%	LISTINGS
+%----------------------------------------------------------------------------------------
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Note}
+\newtheorem*{recall}{Recall}
+
+%----------------------------------------------------------------------------------------
+%	FIGURES
+%----------------------------------------------------------------------------------------
+
+\usepackage{tikz}
+\usepackage{caption}
+
+\usetikzlibrary{shapes.geometric, arrows, calc, positioning}
+
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, text width=1.7cm, inner sep=0.4cm, draw=black]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, inner sep=-0.1cm, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzset{XOR/.style={draw,circle,append after command={
+        [shorten >=\pgflinewidth, shorten <=\pgflinewidth,]
+        (\tikzlastnode.north) edge (\tikzlastnode.south)
+        (\tikzlastnode.east) edge (\tikzlastnode.west)
+        }
+    }
+}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+% \usepackage[english]{datetime2}
+% \DTMsavedate{thedate}{2019-09-18}
+
+\setlength{\droptitle}{-5\baselineskip} % Move the title up
+
+\pretitle{\begin{center}\Large\bfseries}
+\posttitle{\end{center}}
+\title{Fast Indexing Engine \\for Data Identified by a Hashed ID \\and Stored in an Immutable File} % Title
+\author{%
+    \textsc{Cyril Dever}\\ % Name
+    \normalsize Edgewhere \\ % Institution
+}
+\date{\today} % Leave empty to omit a date
+% \date{\DTMusedate{thedate}}
+\renewcommand{\maketitlehookd}{%
+    \begin{abstract}
+        \noindent We define the Treee\texttrademark~...
+    \end{abstract}
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+% Print the title
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+
+\lettrine[nindent=0em,lines=3]{T}here ...
+
+Lorem ipsum ...
+
+%\vfill\eject % To force break column if need be
+%\tableofcontents % Uncomment to add a table of contents
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+\begin{thebibliography}{99} % Bibliography
+
+\bibitem[1]{feistel:hf}
+Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 1973.
+
+\bibitem[2]{Feistel:cyd}
+Cyril Dever. \emph{Feistel Cipher with Hash Round Function}, 2021.
+\\\small\url{https://github.com/cyrildever/feistel}
+
+\bibitem[3]{PRNG}
+E. Barker, W. Barker, W. Burr, W. Polk, M. Smid. \emph{Recommendation for Key Management}, NIST, 2012.
+
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
