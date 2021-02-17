@@ -75,6 +75,9 @@ To read/search an item in the index:
 When using the index, we can seen that we would perform at most 3 reads or 3 writes and index runs of <img src="https://latex.codecogs.com/gif.latex?O(log(n))" /> order, where <img src="https://latex.codecogs.com/gif.latex?n" /> is the number of items in the index.
 
 
+For more details, feel free to read the full [white paper](documentation/src/latex/treee_whitepaper.pdf).
+
+
 ### Usage
 
 ```console
