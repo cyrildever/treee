@@ -361,6 +361,44 @@ and the leaf $\lambda_y$.
 Should another \emph{item} $z$ have $R_k^{\iota_z} = R_k^{\iota_y} = R_k^{\iota_x}$ at step $k$, either a third leaf ($\lambda_z$) would be added 
 in $k+1$, or the leaf with similar path at $k+1$ would become a new parent node and the two leaves would move to $k+2$. So on and so forth...
 
+\subsection{Performance and Memory}
+
+To reduce the initial depth of the tree, one may use a subset $\mathcal{P}' \subset \mathcal{P}$ with the first prime number in $\mathcal{P}'$ 
+being greater than $2$, eg. $\mathcal{P}' := [101, 103, 107, 109, \dots]$. This would avoid some expensive initial walkthroughs.
+
+Besides, we can also use other tricks to improve performance.
+
+For example, as seen before, the modulo operation is of complexity $O(1)$ if the number is of fixed size. However, we can optimize this in two 
+different ways since the operations of multiplying and moving bits are much less expensive in number of operations than the operation of division:
+\begin{itemize}
+    \item Method 1:
+        \begin{equation}
+            \label{eq:alt1}
+            P_i \times \left( n - \floor{n \times \frac{1}{P_i}} \right)
+        \end{equation}
+    \item Method 2:
+        \begin{equation}
+            \label{eq:alt2}
+            P_i \times n \gg 32 
+        \end{equation}
+\end{itemize}
+
+For method 2, for a $n$ of size less than 256 (8 bytes), we would need 16 bytes. So, the trade-off is about speed vs memory.
+
+Table \ref{table:alt2} gives an example of method 2 for a $n$ of 4 bytes.
+\begin{table*}
+    \centering
+    \caption{Memory management}
+    \begin{tabular*}{0.75\textwidth}{l|c|c|c|c|c|c|c|c}
+        Octet           &   1   &   2   &   3   &           4           &       5           &       6           &       7           &       8 \\
+        \hline \hline
+        $n$             &   \_  &   \_  &   \_  &           \_          &       n           &       n           &       n           &       n \\
+        \hline
+        $n \times P_i$  &   \_  &   \_  &   \_  & $n \times P_i \gg 32$ & $n \times P_i$    & $n \times P_i$    & $n \times P_i$    & $n \times P_i$
+        \label{table:alt2}
+    \end{tabular*}
+\end{table*}
+
 
 %\vfill\eject % To force break column if need be
 %\tableofcontents % Uncomment to add a table of contents
