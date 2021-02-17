@@ -119,8 +119,8 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-% \usepackage[english]{datetime2}
-% \DTMsavedate{thedate}{2019-09-18}
+\usepackage[english]{datetime2}
+\DTMsavedate{thedate}{2018-11-26}
 
 \setlength{\droptitle}{-5\baselineskip} % Move the title up
 
@@ -131,11 +131,12 @@
     \textsc{Cyril Dever}\\ % Name
     \normalsize Edgewhere \\ % Institution
 }
-\date{\today} % Leave empty to omit a date
-% \date{\DTMusedate{thedate}}
+% \date{\today} % Leave empty to omit a date
+\date{\DTMusedate{thedate}}
 \renewcommand{\maketitlehookd}{%
     \begin{abstract}
-        \noindent We define the Treee\texttrademark~...
+        \noindent We define here an algorithm for indexing the system based on identifiers that are hashed values which is at the same time very 
+        powerful to the writing and the reading. We call the Treee\texttrademark.
     \end{abstract}
 }
 
@@ -152,7 +153,67 @@
 
 \section{Introduction}
 
-\lettrine[nindent=0em,lines=3]{T}here ...
+\lettrine[nindent=0em,lines=3]{T}he challenge was to set up a powerful yet safe search engine to use when the data is some linked list of items that 
+could be themselves connected to each other in subchains, indexed through their identifiers that are only made of hashed values (like SHA-256 string 
+representations), and all stored in an immutable file.
+
+Its best application is for a blockchain file where an \emph{item} is a transaction embedding a smart contract, and each subchain of items the 
+subsequent uses and/or modifications of this smart contract.
+
+This present document describes such indexing engine.
+
+\begin{definition}[Item]
+    \label{item}
+    An \emph{item} is the actual object recorded in the immutable file subject to indexing.
+
+    As previously stated, it is initially meant to be a transaction or a block in a blockchain file.
+\end{definition}
+
+\begin{definition}[Leaf]
+    \label{leaf}
+    A leaf $\lambda$ embeds the information helping to retrieve one or more possibly linked \emph{items}.
+\end{definition}
+
+%----------------------------------------------------------------------------------------
+
+\section{Formal Description}
+
+\subsection{Acyclic graph}
+
+Treee\texttrademark~is an algorithm for indexing \emph{items} recorded in an immutable file based on their identifiers that are hashed values.
+
+It is constructed as an acyclic graph (a tree $T$), each node containing either a node address (its sons) or a set of \emph{leaf}.
+
+\begin{definition}[Hashed Identifier]
+    \label{hashedIdentifier}
+    We call $\iota$ a hashed identifier (or hashed value) the hexadecimal string representation of the result of a data $d$ passed through a hashing 
+    function $\mathfrak{h}()$ such as:
+    \begin{equation}
+        \label{eq:hashedIdentifier}
+        \iota := \mathfrak{h}(d)
+    \end{equation}
+
+    The passed data $d$ could be anything but it must be unique if it were to be used as identifier per se.
+    
+    In blockchains we operate, this data $d$ is usually the \emph{item} itself, ie. a transaction or a block.
+
+    The hashing function could use any cryptographic hashing algorithm as long as it is set beforehand and once and for all in the targeted system
+    \footnote{We currently use the \texttt{SHA-256} algorithm because of its wide adoption in both end-user and back-end environments}.
+    The number $\mathfrak{N}$ represents the number of bits of the returned hash, eg. $256$ for \texttt{SHA-256}.
+\end{definition}
+
+The number of sons of a node is deterministic and depends on the depth of the tree.
+
+Let $p_k$ be the number of sons of a node $N_k$ at depth $k$.
+
+The goal is to create a balanced tree whose width is adaptive to decrease depth and optimize performance.
+
+We are looking to index numbers, in this case the numerical value of the \emph{item}'s unique identifiers $\iota_i (\forall i \in \mathbb{N})$.
+
+\begin{recall}
+    An identifier is at its core a hashed value, that is its digest is fundamentally a byte array that could represent any positive integer.
+\end{recall}
+
 
 Lorem ipsum ...
 
