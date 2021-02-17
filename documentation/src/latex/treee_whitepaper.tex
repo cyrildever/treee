@@ -237,7 +237,7 @@ We stop when the node is an empty leaf $\lambda_j$.
 \begin{definition}[Representative]
     \label{representative}
     To construct $R_j^{\iota_i}$, this representative at step $j$, we will successively take the modulo of prime numbers, each step $j$ using the 
-    $j$-th prime number in the ordered sequence of all prime numbers $\mathcal{P} := [1, 2, 3, 5, 7, 11, 13, \dots]$.
+    $j$-th prime number in the ordered sequence of all prime numbers $\mathcal{P} := [1, 2, 3, 5, 7, 11, 13, \dots]$, starting at $0$.
 
     This construction ensures that $R_j^{\iota_i}$ be unique.
 
@@ -336,13 +336,31 @@ The last three fields of the leaf therefore transforms $s$ as a circular linked 
 
 \section{Implementation}
 
-\subsection{Performance}
+\subsection{Node creation}
 
-Lorem ipsum ...
+Each step $j$ is paired with the $j$-th prime number in $\mathcal{P}$, eg. the prime number used is $11$ on one step $5$\footnote{We consider step 
+$0$ with prime number $1$ being the root of the tree $T$, hence not being counted.}.
 
-\subsection{Memory}
+At run time, a node is either a parent or a leaf, the latter being an end to a branch in the tree.
 
-Lorem ipsum ...
+\begin{definition}[Parent node]
+    \label{parent}
+    A parent node is a node containing other nodes, either leaves or other parent nodes.
+
+    A leaf is not a parent node by definition.
+\end{definition}
+
+A new parent node must be created every time a representative number walks through the same path as a previous one up to the existing node, 
+extending the branch by one step.
+
+For example, at step $k$, if a node contains the leaf for $R_k^{\iota_x}$ for \emph{item} $x$ and if, for a new \emph{item} $y$, $R_k^{\iota_y} = 
+R_k^{\iota_x}$, then both \emph{items} $x$ and $y$ will see their leaf move to step $k+1$ (where the two new representatives $R_{k+1}^{\iota_x}$ 
+and $R_{k+1}^{\iota_y}$ would give the coordinates of each respective leaf). At step $k$ now lies a new node with two children: the leaf $\lambda_x$ 
+and the leaf $\lambda_y$.
+
+Should another \emph{item} $z$ have $R_k^{\iota_z} = R_k^{\iota_y} = R_k^{\iota_x}$ at step $k$, either a third leaf ($\lambda_z$) would be added 
+in $k+1$, or the leaf with similar path at $k+1$ would become a new parent node and the two leaves would move to $k+2$. So on and so forth...
+
 
 %\vfill\eject % To force break column if need be
 %\tableofcontents % Uncomment to add a table of contents
