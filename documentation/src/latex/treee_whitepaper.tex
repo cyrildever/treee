@@ -273,6 +273,74 @@ $$
 Therefore, as soon as the index contains a reasonably large amount of data, unbalancing the tree in a malicious way would become more and more 
 impossible, if at all possible.
 
+\subsection{Leaf is information on item}
+
+Let $s$ be a suchain of linked \emph{items}. For example, it could be a sequence of transactions between two stakeholders defining the progressive 
+evolution of the terms of their smart contract.
+
+And let $s_0$ be the first \emph{item} in a subchain of linked \emph{items}.
+
+\vspace{1em} % one line separation
+
+A leaf $\lambda_{i_s} \in T$ contains the following list of information about an \emph{item} $i$ referred to by its identifier $\iota_{i_s}$ in 
+subchain $s$:
+\begin{itemize}
+    \item Identifier (ID) of the current \emph{item} (as a hash string):$$
+        \lambda_{i_s}^{ID} := \iota_{i_s}
+    $$
+    \item Position, ie. start address of the current \emph{item} in the file, eg. $$
+        \lambda_{i_s}^{Pos} := 12080
+    $$
+    \item Size (in bytes) of the saved item in the file, eg. $$
+        \lambda_{i_s}^{Size} := 2074
+    $$
+    \item Origin, ie. the unique identifier of the \emph{item} that is at the start of the \emph{item}'s subchain (if any):$$
+        \lambda_{i_s}^{Origin} := \iota_{i_{s_0}}
+    $$
+    \item Previous, ie. the optional unique identifier of the previous \emph{item} chained to it:$$
+        \lambda_{i_s}^{Prev} := \iota_{i_{s-1}}
+    $$
+    \item Next, ie. the optional unique identifier of the next \emph{item} chained:$$
+        \lambda_{i_s}^{Next} := \iota_{i_{s+1}}
+    $$
+\end{itemize}
+
+A leaf whose next \emph{item} field is empty is the last item in the subchain:
+\begin{equation}
+    \label{eq:lastItem}
+    \lambda_{i_s}^{Next} = \emptyset \iff \iota_{i_{s+1}} \not\in T
+\end{equation}
+
+A leaf whose origin \emph{item} field is equal to the identifier of the current \emph{item} is necessarily the origin of the subchain:
+\begin{equation}
+    \label{eq:firstItem}
+    \lambda_{i_s}^{Origin} = \lambda_{i_s}^{ID} \iff s = s_0
+\end{equation}
+
+As such, it has a particular operating since, if there were to be one or more \emph{items} thereafter, the last \emph{item} of the subchain will be 
+identified here as its previous item. Therefore, let $s_z$ be the last index in a subchain of linked \emph{items}, we have:
+\begin{equation}
+    \label{eq:circularAtOrigin}
+    \left\{
+        \begin{array}{l}
+            \lambda_{i_s}^{Origin} = \lambda_{i_s}^{ID} \\ \\
+            \lambda_{i_s}^{Prev} \neq \emptyset \\
+        \end{array}
+    \right.
+    \iff \lambda_{i_s}^{Prev} := \iota_{i_{s_z}}
+\end{equation}
+
+The last three fields of the leaf therefore transforms $s$ as a circular linked list.
+
+%----------------------------------------------------------------------------------------
+
+\section{Implementation}
+
+\subsection{Performance}
+
+Lorem ipsum ...
+
+\subsection{Memory}
 
 Lorem ipsum ...
 
@@ -285,15 +353,8 @@ Lorem ipsum ...
 
 \begin{thebibliography}{99} % Bibliography
 
-\bibitem[1]{feistel:hf}
-Horst Feistel. \emph{Cryptography and Computer Privacy}, Scientific American, 1973.
-
-\bibitem[2]{Feistel:cyd}
-Cyril Dever. \emph{Feistel Cipher with Hash Round Function}, 2021.
-\\\small\url{https://github.com/cyrildever/feistel}
-
-\bibitem[3]{PRNG}
-E. Barker, W. Barker, W. Burr, W. Polk, M. Smid. \emph{Recommendation for Key Management}, NIST, 2012.
+\bibitem[1]{gauss}
+Gauss. \emph{Disquisitiones Arithmeticae}, translated by Arthur A. Clarke, Springer, 1986.
 
 \end{thebibliography}
 
