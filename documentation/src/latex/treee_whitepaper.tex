@@ -1,0 +1,444 @@
+% TREEE white paper
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside,twocolumn]{article}
+
+\usepackage{blindtext} % Package to generate dummy text throughout this template 
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+%\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{eufrak}
+\usepackage{graphicx} % For \scalebox
+
+\usepackage[english]{babel} % Language hyphenation and typographical rules
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+
+\usepackage{enumitem} % Customized lists
+\setlist[itemize]{noitemsep} % Make itemize lists more compact
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\arabic{subsection}} % roman numerals only for subsections
+\titleformat{\section}[block]{\Large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large\scshape}{\thesubsection.}{1em}{} % Change the look of the section titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{Crumbled Data Storage $\bullet$ Cyril Dever} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+\setlength{\headheight}{14pt}
+
+\usepackage{titling} % Customizing the title section
+
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage[symbol]{footmisc} % To use special character in footnote
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
+\usepackage{outlines}
+\usepackage[font=itshape]{quoting}
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\SetKw{Continue}{continue}
+\SetKw{KwBy}{by}
+
+%----------------------------------------------------------------------------------------
+%	FUNCTIONS
+%----------------------------------------------------------------------------------------
+
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\bsfnote}{\textsuperscript{*}} % for reference to the base64 string note
+\newcommand{\hexnote}{\textsuperscript{$\dagger$}} % for reference to the hex string note
+\newcommand{\mod}[1]{\ \mathrm{mod}\ #1}
+
+%----------------------------------------------------------------------------------------
+%	LOW LEVEL SECTIONS
+%----------------------------------------------------------------------------------------
+
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4} % eq. subsubsubsection
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+%----------------------------------------------------------------------------------------
+%	LISTINGS
+%----------------------------------------------------------------------------------------
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Note}
+\newtheorem*{recall}{Recall}
+
+%----------------------------------------------------------------------------------------
+%	FIGURES
+%----------------------------------------------------------------------------------------
+
+\usepackage{tikz}
+\usepackage{caption}
+
+\usetikzlibrary{shapes.geometric, arrows, calc, positioning}
+
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, text width=1.7cm, inner sep=0.4cm, draw=black]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, inner sep=-0.1cm, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzset{XOR/.style={draw,circle,append after command={
+        [shorten >=\pgflinewidth, shorten <=\pgflinewidth,]
+        (\tikzlastnode.north) edge (\tikzlastnode.south)
+        (\tikzlastnode.east) edge (\tikzlastnode.west)
+        }
+    }
+}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\usepackage[english]{datetime2}
+\DTMsavedate{thedate}{2018-11-26}
+
+\setlength{\droptitle}{-5\baselineskip} % Move the title up
+
+\pretitle{\begin{center}\Large\bfseries}
+\posttitle{\end{center}}
+\title{Fast Indexing Engine \\for Data Identified by a Hashed ID \\and Stored in an Immutable File} % Title
+\author{%
+    \textsc{Cyril Dever}\\ % Name
+    \normalsize Edgewhere \\ % Institution
+}
+% \date{\today} % Leave empty to omit a date
+\date{\DTMusedate{thedate}}
+\renewcommand{\maketitlehookd}{%
+    \begin{abstract}
+        \noindent We define here an algorithm for indexing the system based on identifiers that are hashed values which is at the same time very 
+        powerful to the writing and the reading. We call the Treee\texttrademark.
+    \end{abstract}
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+% Print the title
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+
+\lettrine[nindent=0em,lines=3]{T}he challenge was to set up a powerful yet safe search engine to use when the data is some linked list of items that 
+could be themselves connected to each other in subchains, indexed through their identifiers that are only made of hashed values (like SHA-256 string 
+representations), and all stored in an immutable file.
+
+Its best application is for a blockchain file where an \emph{item} is a transaction embedding a smart contract, and each subchain of items the 
+subsequent uses and/or modifications of this smart contract.
+
+This present document describes such indexing engine.
+
+\begin{definition}[Item]
+    \label{item}
+    An \emph{item} is the actual object recorded in the immutable file subject to indexing.
+
+    As previously stated, it is initially meant to be a transaction or a block in a blockchain file.
+\end{definition}
+
+\begin{definition}[Leaf]
+    \label{leaf}
+    A leaf $\lambda$ embeds the information helping to retrieve one or more possibly linked \emph{items}.
+\end{definition}
+
+%----------------------------------------------------------------------------------------
+
+\section{Formal Description}
+
+\subsection{Acyclic graph}
+
+Treee\texttrademark~is an algorithm for indexing \emph{items} recorded in an immutable file based on their identifiers that are hashed values.
+
+It is constructed as an acyclic graph (a tree $T$), each node containing either a node address (its sons) or a set of \emph{leaf}.
+
+\begin{definition}[Hashed Identifier]
+    \label{hashedIdentifier}
+    We call $\iota$ a hashed identifier (or hashed value) the hexadecimal string representation of the result of a data $d$ passed through a hashing 
+    function $\mathfrak{h}()$ such as:
+    \begin{equation}
+        \label{eq:hashedIdentifier}
+        \iota := \mathfrak{h}(d)
+    \end{equation}
+
+    The passed data $d$ could be anything but it must be unique if it were to be used as identifier per se.
+    
+    In blockchains we operate, this data $d$ is usually the \emph{item} itself, ie. a transaction or a block.
+
+    The hashing function could use any cryptographic hashing algorithm as long as it is set beforehand and once and for all in the targeted system
+    \footnote{We currently use the \texttt{SHA-256} algorithm because of its wide adoption in both end-user and back-end environments}.
+    The number $\mathfrak{N}$ represents the number of bits of the returned hash, eg. $256$ for \texttt{SHA-256}.
+\end{definition}
+
+The number of sons of a node is deterministic and depends on the depth of the tree.
+
+Let $p_k$ be the number of sons of a node $N_k$ at depth $k$.
+
+The goal is to create a balanced tree whose width is adaptive to decrease depth and optimize performance.
+
+We are looking to index numbers, in this case the numerical value of the \emph{item}'s unique identifiers $\iota_i (\forall i \in \mathbb{N})$.
+
+\begin{recall}
+    An identifier is at its core a hashed value, that is its digest is fundamentally a byte array that could represent any positive integer.
+\end{recall}
+
+\subsection{Index}
+
+We now explain the course of the index.
+
+Let $\iota_i^b$ be the value of the hashed identifier for the \emph{item} $i$ in binary form, eg. $$
+    \iota_i^b := \texttt{"a1"} \mapsto \texttt{10100001}
+$$
+indicating its position in the tree $T$.
+
+At each step $j := [0..n) \mid n \leq \mathfrak{N}$, we would pass to child $0$ if the $j$-th bit of $\iota_i^b$ equals $0$; otherwise, we would 
+pass to child $1$.
+
+Let $R_j^{\iota_i}$ be the value of this representation of $\iota_i^b$ at step $j < k$.
+
+For a full tree $T$, we build a representation of this number at each step and traverse the tree the same way. 
+
+At the step $j$ of depth $k$, we pass to child $0$ if $R_j^{\iota_i}$ equals $0$, we pass to child $1$ if $R_j^{\iota_i}$ equals $1$, \dots, we 
+pass to child $p_{k-1}$ if $R_j^{\iota_i}$ equals $p_{k-1}$.
+We stop when the node is an empty leaf $\lambda_j$.
+
+\begin{definition}[Representative]
+    \label{representative}
+    To construct $R_j^{\iota_i}$, this representative at step $j$, we will successively take the modulo of prime numbers, each step $j$ using the 
+    $j$-th prime number in the ordered sequence of all prime numbers $\mathcal{P} := [1, 2, 3, 5, 7, 11, 13, \dots]$, starting at $0$.
+
+    This construction ensures that $R_j^{\iota_i}$ be unique.
+
+    \begin{proof}
+        According to the Chinese remainder theorem\cite{gauss}, each number has a unique representative that could be written as the continuation 
+        of these modulos.
+
+        Indeed, a number $n$ can be written in the following form:$$
+            n \equiv n \mod P_i
+        $$
+        where $P_i$ is the $i$-th modulo in $\mathcal{P}$.
+
+        Modulos are calculated in $O(1)$ for fixed-sized integers.
+        Since the multiplication is faster than the division (necessary for the calculation of the modulo), one may use 
+        multiplications by means of floating:$$
+            P_i \times \left( n - \floor{n \times \frac{1}{P_i}} \right)
+        $$
+        This writing in the form of a sequence allows to uniquely define each integer $n$.
+    \end{proof}
+\end{definition}
+
+Given the random nature of the numbers (or pseudo-random, since the identifiers of the \emph{items} are generated by cryptographic hashing 
+technologies), the tree $T$ is balanced.
+
+To unbalance it in a malicious way, it would be necessary to be able to generate hashes whose modulo follows a particular trajectory.
+
+However, the difficulty of such an operation increases exponentially (in the order of $e^{\left(k \times log(k) \right)}$ where $k$ is the depth of 
+$T$).
+
+As a reminder, the product of the first 16 prime numbers already equals: $$
+    32,589,158,477,190,044,730 \simeq 3 \times 10^{19}
+$$
+Therefore, as soon as the index contains a reasonably large amount of data, unbalancing the tree in a malicious way would become more and more 
+impossible, if at all possible.
+
+\subsection{Leaf is information on item}
+
+Let $s$ be a suchain of linked \emph{items}. For example, it could be a sequence of transactions between two stakeholders defining the progressive 
+evolution of the terms of their smart contract.
+
+And let $s_0$ be the first \emph{item} in a subchain of linked \emph{items}.
+
+\vspace{1em} % one line separation
+
+A leaf $\lambda_{i_s} \in T$ contains the following list of information about an \emph{item} $i$ referred to by its identifier $\iota_{i_s}$ in 
+subchain $s$:
+\begin{itemize}
+    \item Identifier (ID) of the current \emph{item} (as a hash string):$$
+        \lambda_{i_s}^{ID} := \iota_{i_s}
+    $$
+    \item Position, ie. start address of the current \emph{item} in the file, eg. $$
+        \lambda_{i_s}^{Pos} := 12080
+    $$
+    \item Size (in bytes) of the saved item in the file, eg. $$
+        \lambda_{i_s}^{Size} := 2074
+    $$
+    \item Origin, ie. the unique identifier of the \emph{item} that is at the start of the \emph{item}'s subchain (if any):$$
+        \lambda_{i_s}^{Origin} := \iota_{i_{s_0}}
+    $$
+    \item Previous, ie. the optional unique identifier of the previous \emph{item} chained to it:$$
+        \lambda_{i_s}^{Prev} := \iota_{i_{s-1}}
+    $$
+    \item Next, ie. the optional unique identifier of the next \emph{item} chained:$$
+        \lambda_{i_s}^{Next} := \iota_{i_{s+1}}
+    $$
+\end{itemize}
+
+A leaf whose next \emph{item} field is empty is the last item in the subchain:
+\begin{equation}
+    \label{eq:lastItem}
+    \lambda_{i_s}^{Next} = \emptyset \iff \iota_{i_{s+1}} \not\in T
+\end{equation}
+
+A leaf whose origin \emph{item} field is equal to the identifier of the current \emph{item} is necessarily the origin of the subchain:
+\begin{equation}
+    \label{eq:firstItem}
+    \lambda_{i_s}^{Origin} = \lambda_{i_s}^{ID} \iff s = s_0
+\end{equation}
+
+As such, it has a particular operating since, if there were to be one or more \emph{items} thereafter, the last \emph{item} of the subchain will be 
+identified here as its previous item. Therefore, let $s_z$ be the last index in a subchain of linked \emph{items}, we have:
+\begin{equation}
+    \label{eq:circularAtOrigin}
+    \left\{
+        \begin{array}{l}
+            \lambda_{i_s}^{Origin} = \lambda_{i_s}^{ID} \\ \\
+            \lambda_{i_s}^{Prev} \neq \emptyset \\
+        \end{array}
+    \right.
+    \iff \lambda_{i_s}^{Prev} := \iota_{i_{s_z}}
+\end{equation}
+
+The last three fields of the leaf therefore transforms $s$ as a circular linked list.
+
+%----------------------------------------------------------------------------------------
+
+\section{Implementation}
+
+\subsection{Node creation}
+
+Each step $j$ is paired with the $j$-th prime number in $\mathcal{P}$, eg. the prime number used is $11$ on one step $5$\footnote{We consider step 
+$0$ with prime number $1$ being the root of the tree $T$, hence not being counted.}.
+
+At run time, a node is either a parent or a leaf, the latter being an end to a branch in the tree.
+
+\begin{definition}[Parent node]
+    \label{parent}
+    A parent node is a node containing other nodes, either leaves or other parent nodes.
+
+    A leaf is not a parent node by definition.
+\end{definition}
+
+A new parent node must be created every time a representative number walks through the same path as a previous one up to the existing node, 
+extending the branch by one step.
+
+For example, at step $k$, if a node contains the leaf for $R_k^{\iota_x}$ for \emph{item} $x$ and if, for a new \emph{item} $y$, $R_k^{\iota_y} = 
+R_k^{\iota_x}$, then both \emph{items} $x$ and $y$ will see their leaf move to step $k+1$ (where the two new representatives $R_{k+1}^{\iota_x}$ 
+and $R_{k+1}^{\iota_y}$ would give the coordinates of each respective leaf). At step $k$ now lies a new node with two children: the leaf $\lambda_x$ 
+and the leaf $\lambda_y$.
+
+Should another \emph{item} $z$ have $R_k^{\iota_z} = R_k^{\iota_y} = R_k^{\iota_x}$ at step $k$, either a third leaf ($\lambda_z$) would be added 
+in $k+1$, or the leaf with similar path at $k+1$ would become a new parent node and the two leaves would move to $k+2$. So on and so forth...
+
+\subsection{Performance and Memory}
+
+To reduce the initial depth of the tree, one may use a subset $\mathcal{P}' \subset \mathcal{P}$ with the first prime number in $\mathcal{P}'$ 
+being greater than $2$, eg. $\mathcal{P}' := [101, 103, 107, 109, \dots]$. This would avoid some expensive initial walkthroughs.
+
+Besides, we can also use other tricks to improve performance.
+
+For example, as seen before, the modulo operation is of complexity $O(1)$ if the number is of fixed size. However, we can optimize this in two 
+different ways since the operations of multiplying and moving bits are much less expensive in number of operations than the operation of division:
+\begin{itemize}
+    \item Method 1:
+        \begin{equation}
+            \label{eq:alt1}
+            P_i \times \left( n - \floor{n \times \frac{1}{P_i}} \right)
+        \end{equation}
+    \item Method 2:
+        \begin{equation}
+            \label{eq:alt2}
+            P_i \times n \gg 32 
+        \end{equation}
+\end{itemize}
+
+For method 2, for a $n$ of size less than 256 (8 bytes), we would need 16 bytes. So, the trade-off is about speed vs memory.
+
+Table \ref{table:alt2} gives an example of method 2 for a $n$ of 4 bytes.
+\begin{table*}
+    \centering
+    \caption{Memory management}
+    \begin{tabular*}{0.75\textwidth}{l|c|c|c|c|c|c|c|c}
+        Octet           &   1   &   2   &   3   &           4           &       5           &       6           &       7           &       8 \\
+        \hline \hline
+        $n$             &   \_  &   \_  &   \_  &           \_          &       n           &       n           &       n           &       n \\
+        \hline
+        $n \times P_i$  &   \_  &   \_  &   \_  & $n \times P_i \gg 32$ & $n \times P_i$    & $n \times P_i$    & $n \times P_i$    & $n \times P_i$
+        \label{table:alt2}
+    \end{tabular*}
+\end{table*}
+
+\subsection{Usage}
+
+\subsubsection{Write}
+
+To add an element to the tree:
+\begin{itemize}
+    \item The new leaf is written in the index;
+    \item We update the $\lambda^{Next}$ field of the leaf that previously corresponded to the last \emph{item} of the subchain;
+    \item We modify the $\lambda^{Prev}$ field of the leaf of the origin \emph{item} by writing the identifier of the current \emph{item} to the 
+        latter.
+\end{itemize}
+
+\subsubsection{Read}
+
+To read/search an item in the index:
+\begin{outline}
+    \1 We find in the tree the leaf corresponding to the identifier of the searched item:
+        \2 If the $\lambda^{Next}$ field of the leaf is empty, this is the last item of the subchain;
+        \2 Otherwise, we go to the next step;
+    \1 We find the leaf corresponding to the identifier of the field $\lambda^{Origin}$;
+    \1 We use the $\lambda^{Prev}$ field of this leaf to find the last item of the subchain.
+\end{outline}
+
+When using the index, we can seen that we would perform at most 3 reads or 3 writes plus index runs of $O(log(n))$ order, where $n$ is the number of 
+\emph{items} in the index.
+
+%\vfill\eject % To force break column if need be
+%\tableofcontents % Uncomment to add a table of contents
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+\begin{thebibliography}{99} % Bibliography
+
+\bibitem[1]{gauss}
+Gauss. \emph{Disquisitiones Arithmeticae}, translated by Arthur A. Clarke, Springer, 1986.
+
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
