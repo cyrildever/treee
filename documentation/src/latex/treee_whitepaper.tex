@@ -399,6 +399,31 @@ Table \ref{table:alt2} gives an example of method 2 for a $n$ of 4 bytes.
     \end{tabular*}
 \end{table*}
 
+\subsection{Usage}
+
+\subsubsection{Write}
+
+To add an element to the tree:
+\begin{itemize}
+    \item The new leaf is written in the index;
+    \item We update the $\lambda^{Next}$ field of the leaf that previously corresponded to the last \emph{item} of the subchain;
+    \item We modify the $\lambda^{Prev}$ field of the leaf of the origin \emph{item} by writing the identifier of the current \emph{item} to the 
+        latter.
+\end{itemize}
+
+\subsubsection{Read}
+
+To read/search an item in the index:
+\begin{outline}
+    \1 We find in the tree the leaf corresponding to the identifier of the searched item:
+        \2 If the $\lambda^{Next}$ field of the leaf is empty, this is the last item of the subchain;
+        \2 Otherwise, we go to the next step;
+    \1 We find the leaf corresponding to the identifier of the field $\lambda^{Origin}$;
+    \1 We use the $\lambda^{Prev}$ field of this leaf to find the last item of the subchain.
+\end{outline}
+
+When using the index, we can seen that we would perform at most 3 reads or 3 writes plus index runs of $O(log(n))$ order, where $n$ is the number of 
+\emph{items} in the index.
 
 %\vfill\eject % To force break column if need be
 %\tableofcontents % Uncomment to add a table of contents
