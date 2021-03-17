@@ -62,10 +62,7 @@ var primeNumbers = []uint64{
 // IsPrime returns `true` if the passed number is one of the first 1000 prime numbers
 // TODO Add methods to build prime in order to go over the first 1000 prime numbers, but that should be widely sufficient for now
 func IsPrime(number uint64) bool {
-	if number == 0 {
-		return false
-	}
-	if number >= 7919 {
+	if number == 0 || number > 7919 {
 		return false
 	}
 	for _, pn := range primeNumbers {
@@ -80,7 +77,7 @@ func IsPrime(number uint64) bool {
 
 // Next ...
 func Next(number uint64) (uint64, error) {
-	if number > 7918 {
+	if number >= 7919 {
 		return 0, errors.New("number is too high")
 	}
 	for _, pn := range primeNumbers {
