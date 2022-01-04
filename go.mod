@@ -6,7 +6,7 @@ require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/go-ozzo/ozzo-routing v2.1.4+incompatible // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
-	github.com/gofrs/uuid v4.1.0+incompatible
+	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/inconshreveable/log15 v0.0.0-20201112154412-8562bdadbbac
@@ -18,10 +18,10 @@ require (
 	github.com/valyala/fasthttp v1.31.0
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/net v0.0.0-20211123203042-d83791d6bcd9
-	golang.org/x/sys v0.0.0-20211123173158-ef496fb156ab // indirect
-	google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1 // indirect
-	google.golang.org/grpc v1.42.0
+	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb // indirect
+	google.golang.org/grpc v1.43.0
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	gotest.tools v2.2.0+incompatible
