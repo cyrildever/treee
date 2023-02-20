@@ -15,8 +15,8 @@ require (
 	github.com/valyala/fasthttp v1.44.0
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/net v0.6.0
-	google.golang.org/genproto v0.0.0-20230209215440-0dfe4f8abfcc // indirect
+	golang.org/x/net v0.7.0
+	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44 // indirect
 	google.golang.org/grpc v1.53.0
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gotest.tools v2.2.0+incompatible
