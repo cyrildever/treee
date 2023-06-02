@@ -275,7 +275,7 @@ And on an Apple iMac 3.1 Ghz Intel Core i5 with 16 Go DDR4 RAM clocked at 2667 M
 
 ### License
 
-This module is distributed under an MIT license.
+This module is distributed under a MIT license. \
 See the [LICENSE](LICENSE) file.
 
 
