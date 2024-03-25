@@ -8,14 +8,13 @@ require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
 	github.com/inconshreveable/log15 v2.16.0+incompatible
-	github.com/klauspost/compress v1.17.1 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
-	github.com/valyala/fasthttp v1.50.0
+	github.com/valyala/fasthttp v1.52.0
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/net v0.17.0
-	google.golang.org/genproto v0.0.0-20231016165738-49dd2c1f3d0b // indirect
-	google.golang.org/grpc v1.59.0
+	golang.org/x/net v0.22.0
+	google.golang.org/genproto v0.0.0-20240318140521-94a12d6c2237 // indirect
+	google.golang.org/grpc v1.62.1
 	gotest.tools v2.2.0+incompatible
 )

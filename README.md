@@ -280,4 +280,4 @@ See the [LICENSE](LICENSE) file.
 
 
 <hr />
-&copy; 2018-2023 Cyril Dever. All rights reserved.
+&copy; 2018-2024 Cyril Dever. All rights reserved.
