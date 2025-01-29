@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   treee:
-    # image: edgewhere/treee:1.5.1
+    # image: edgewhere/treee:1.5.2
     build: .
     volumes:
       - data-treee:/home/treee/saved
